@@ -1,9 +1,15 @@
 import type { NextPage } from 'next'
+import mitt from 'next/dist/shared/lib/mitt'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
-const Home: NextPage = () => {
+
+type Props = {
+  tokenURL: String | null
+}
+
+const Home: NextPage<Props> = ({ tokenURL }) => {
   return (
     <div className={styles.container}>
       <Head>
@@ -51,6 +57,7 @@ const Home: NextPage = () => {
             </p>
           </a>
         </div>
+        <p>{tokenURL}</p>
       </main>
 
       <footer className={styles.footer}>
@@ -67,6 +74,15 @@ const Home: NextPage = () => {
       </footer>
     </div>
   )
+}
+
+export async function getServerSideProps() {
+  console.log('GETTING SERVERSIDE PROPS: tokenURL='+process.env.AUTH_ROUTE);
+  return {
+    props: {
+      tokenURL:process.env.AUTH_ROUTE || null
+    }
+  };
 }
 
 export default Home
