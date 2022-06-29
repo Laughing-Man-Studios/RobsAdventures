@@ -8,8 +8,9 @@ export enum Labels {
 
 export const LabelsList = Object.values(Labels);
 
-export default {
+const literals = {
     tokenPath: TOKEN_PATH,
     tokenFlag: TOKEN_FLAG,
     labels: Labels
-}
+};
+export default literals
