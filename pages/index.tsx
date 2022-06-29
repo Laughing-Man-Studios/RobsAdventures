@@ -1,5 +1,4 @@
 import type { NextPage } from 'next'
-import mitt from 'next/dist/shared/lib/mitt'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'

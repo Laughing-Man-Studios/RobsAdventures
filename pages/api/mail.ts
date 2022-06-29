@@ -1,11 +1,11 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { promises } from 'fs'
-import { Labels, LabelsList, TOKEN_FLAG, TOKEN_PATH } from '../common/literals';
-import { getOauth2Client } from '../common/functions';
+import { Labels, LabelsList, TOKEN_FLAG, TOKEN_PATH } from '../../common/literals';
+import { getOauth2Client } from '../../common/functions';
 import { OAuth2Client } from 'google-auth-library';
 import { gmail_v1, google } from 'googleapis';
-import { TokenError } from '../common/errors';
+import { TokenError } from '../../common/errors';
 
 export default async function handler(
   req: NextApiRequest,
