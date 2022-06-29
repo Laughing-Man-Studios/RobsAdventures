@@ -1,3 +1,2 @@
 web: npm start
-
-release: 
+release: sh -c './scripts/release.sh'
