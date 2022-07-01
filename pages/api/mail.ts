@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Labels, LabelsList, TOKEN_FLAG, TOKEN_VAR } from '../../common/literals';
+import { CURRENT_TRIP, Labels, LabelsList, TOKEN_FLAG, TOKEN_VAR } from '../../common/literals';
 import { getOauth2Client } from '../../common/functions';
 import { OAuth2Client } from 'google-auth-library';
 import { gmail_v1, google } from 'googleapis';
@@ -54,6 +54,7 @@ async function getAndSaveMail(auth: OAuth2Client) {
   const gmail = google.gmail({version: 'v1', auth});
   const labelMap = await getLabels(gmail);
   await saveLocationMessages(labelMap, gmail);
+  await saveUpdateMessages(labelMap, gmail);
 }
 
 async function getLabels(gmail: gmail_v1.Gmail): Promise<Map<string, string>> {
@@ -95,9 +96,10 @@ async function saveLocationMessages(
             where: {
               gmailId: message.id
             }
-          })
+          });
+          await prisma.$disconnect();
           if (messageEntry) {
-            console.log(`Message ${message.id} already exists in db.`);
+            console.log(`Location Message ${message.id} already exists in db.`);
             continue;
           }
         } catch(err) {
@@ -119,10 +121,65 @@ async function saveLocationMessages(
               data: {
                 gmailId: data.id || '',
                 trip: {
-                  connect: { name: 'RITO_ALTO_FOUR_PASS_LOOP' }
+                  connect: { name: CURRENT_TRIP }
                 },
                 latitude,
                 longitude
+              }
+            })
+          } catch(err) {
+            console.log(err);
+          }
+  
+          await prisma.$disconnect();
+        }
+      }
+    }
+  }
+}
+
+async function saveUpdateMessages(
+  labelMap: Map<string, string>,
+  gmail: gmail_v1.Gmail): Promise<void> {
+  const updateLabelId = labelMap.get(Labels.Messages);
+
+  if (updateLabelId) {
+    const resp = await gmail.users.messages.list({ userId: 'me', labelIds:[updateLabelId] });
+    const { messages: updateMessages } = resp.data;
+
+    if (updateMessages && updateMessages.length > 0) {
+      for(let message of updateMessages) {
+        try {
+          const messageEntry = await prisma.location.findFirst({
+            where: {
+              gmailId: message.id
+            }
+          })
+          await prisma.$disconnect();
+          if (messageEntry) {
+            console.log(`Update Message ${message.id} already exists in db.`);
+            continue;
+          }
+        } catch(err) {
+          console.log(err);
+        }
+        const { data } = await gmail.users.messages.get({
+          userId: 'me',
+          id: message.id
+        });
+        const parts = data.payload?.parts;
+        if (parts && Array.isArray(parts)) {
+          const encodedMessage = parts[0].body?.data || '';
+          const message = Buffer.from(encodedMessage, 'base64').toString();
+
+          try {
+            await prisma.messages.create({
+              data: {
+                gmailId: data.id || '',
+                trip: {
+                  connect: { name: CURRENT_TRIP }
+                },
+                message
               }
             })
           } catch(err) {
