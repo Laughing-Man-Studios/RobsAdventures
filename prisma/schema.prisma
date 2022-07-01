@@ -14,7 +14,7 @@ model Location {
   id        Int      @id @default(autoincrement())
   gmailId   String
   trip      Trip     @relation("TripLocation", fields: [tripId], references: [id])
-  tripId    Int  
+  tripId    Int      @unique
   longitude String 
   latitude  String   
   createdAt DateTime @default(now())
@@ -25,7 +25,7 @@ model Messages {
   id        Int      @id @default(autoincrement())
   gmailId   String
   trip      Trip     @relation("TripMessage", fields: [tripId], references: [id])
-  tripId    Int   
+  tripId    Int      @unique
   message   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

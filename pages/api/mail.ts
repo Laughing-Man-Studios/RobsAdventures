@@ -5,6 +5,13 @@ import { getOauth2Client } from '../../common/functions';
 import { OAuth2Client } from 'google-auth-library';
 import { gmail_v1, google } from 'googleapis';
 import { TokenError } from '../../common/errors';
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+
+interface LocationData {
+  longitude: string,
+  latitude: string
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -13,7 +20,7 @@ export default async function handler(
     const oAuth2Client = getOauth2Client(res);  
     try {
       getToken(oAuth2Client);
-      await getMail(oAuth2Client);
+      await getAndSaveMail(oAuth2Client);
       res.status(200).send('Success');
     } catch (err) {
       if (err instanceof TokenError) {
@@ -43,14 +50,13 @@ function getAuthUrl(oAuth2Client: OAuth2Client, err: unknown) {
   console.log('No Token Available. Need to Authenticate with Google to get Token file. Err: '+err);
 }
 
-async function getMail(auth: OAuth2Client) {
+async function getAndSaveMail(auth: OAuth2Client) {
   const gmail = google.gmail({version: 'v1', auth});
-  const labelMap = getLabels(gmail);
-  // TODO: Fill out rest of getting mail with right lables
-
+  const labelMap = await getLabels(gmail);
+  await saveLocationMessages(labelMap, gmail);
 }
 
-async function getLabels(gmail: gmail_v1.Gmail): Promise<Map<String, String>> {
+async function getLabels(gmail: gmail_v1.Gmail): Promise<Map<string, string>> {
   const labelMap = new Map();
   const { data } = await gmail.users.labels.list({ userId: 'me' });
   if (!data.labels) {
@@ -62,4 +68,57 @@ async function getLabels(gmail: gmail_v1.Gmail): Promise<Map<String, String>> {
     }
   }
   return labelMap;
+}
+
+function getLocationData(snippit: string): LocationData {
+  const [fullMatch, latitude, longitude] = snippit.match(/(?<=My location is )(.\d*.\d*), (.\d*.\d*)/) || [];
+  
+  return {
+    latitude,
+    longitude
+  };
+}
+
+async function saveLocationMessages(
+  labelMap: Map<string, string>,
+  gmail: gmail_v1.Gmail): Promise<void> {
+  const locationLabelId = labelMap.get(Labels.Location);
+
+  if (locationLabelId) {
+    const resp = await gmail.users.messages.list({ userId: 'me', labelIds:[locationLabelId] });
+    const { messages: locationMessages } = resp.data;
+
+    if (locationMessages && locationMessages.length > 0) {
+      for(let message of locationMessages) {
+        const { data } = await gmail.users.messages.get({
+          userId: 'me',
+          id: message.id
+        });
+        const parts = data.payload?.parts;
+        if (parts && Array.isArray(parts)) {
+          const encodedMessage = parts[0].body?.data || '';
+          const message = Buffer.from(encodedMessage, 'base64').toString();
+
+          const { latitude, longitude } = getLocationData(message || '');
+          console.log(latitude, longitude);
+          try {
+            await prisma.location.create({
+              data: {
+                gmailId: data.id || '',
+                trip: {
+                  connect: { name: 'RITO_ALTO_FOUR_PASS_LOOP' }
+                },
+                latitude,
+                longitude
+              }
+            })
+          } catch(err) {
+            console.log(err);
+          }
+  
+          await prisma.$disconnect();
+        }
+      }
+    }
+  }
 }
