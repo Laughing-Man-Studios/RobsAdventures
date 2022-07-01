@@ -90,6 +90,19 @@ async function saveLocationMessages(
 
     if (locationMessages && locationMessages.length > 0) {
       for(let message of locationMessages) {
+        try {
+          const messageEntry = await prisma.location.findFirst({
+            where: {
+              gmailId: message.id
+            }
+          })
+          if (messageEntry) {
+            console.log(`Message ${message.id} already exists in db.`);
+            continue;
+          }
+        } catch(err) {
+          console.log(err);
+        }
         const { data } = await gmail.users.messages.get({
           userId: 'me',
           id: message.id

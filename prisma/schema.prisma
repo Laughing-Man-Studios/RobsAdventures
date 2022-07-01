@@ -12,7 +12,7 @@ datasource db {
 
 model Location {
   id        Int      @id @default(autoincrement())
-  gmailId   String
+  gmailId   String   @unique
   trip      Trip     @relation("TripLocation", fields: [tripId], references: [id])
   tripId    Int      @unique
   longitude String 
@@ -23,7 +23,7 @@ model Location {
 
 model Messages {
   id        Int      @id @default(autoincrement())
-  gmailId   String
+  gmailId   String   @unique
   trip      Trip     @relation("TripMessage", fields: [tripId], references: [id])
   tripId    Int      @unique
   message   String
