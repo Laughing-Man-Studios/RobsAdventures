@@ -1,7 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { promises } from 'fs'
-import { Labels, LabelsList, TOKEN_FLAG, TOKEN_PATH } from '../../common/literals';
+import { Labels, LabelsList, TOKEN_FLAG, TOKEN_VAR } from '../../common/literals';
 import { getOauth2Client } from '../../common/functions';
 import { OAuth2Client } from 'google-auth-library';
 import { gmail_v1, google } from 'googleapis';
@@ -13,7 +12,7 @@ export default async function handler(
 ) {
     const oAuth2Client = getOauth2Client(res);  
     try {
-      await getToken(oAuth2Client);
+      getToken(oAuth2Client);
       await getMail(oAuth2Client);
       res.status(200).send('Success');
     } catch (err) {
@@ -26,12 +25,12 @@ export default async function handler(
     }
 }
 
-async function getToken(oAuth2Client: OAuth2Client) {
-  try {
-    const token = await promises.readFile(TOKEN_PATH);
+function getToken(oAuth2Client: OAuth2Client) {
+  const token = process.env[TOKEN_VAR];
+  if (token) {
     oAuth2Client.setCredentials(JSON.parse(token.toString()));
-  } catch (err) {
-    throw new TokenError(err as string);
+  } else {
+    throw new TokenError('TOKEN_VAR enviornment variable is not set. Need to authenticate with Google.');
   }
 }
 

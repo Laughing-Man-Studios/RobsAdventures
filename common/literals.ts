@@ -1,4 +1,4 @@
-export const TOKEN_PATH = 'token.json';
+export const TOKEN_VAR = 'TOKEN';
 export const TOKEN_FLAG = 'AUTH_ROUTE';
 
 export enum Labels {
@@ -9,7 +9,7 @@ export enum Labels {
 export const LabelsList = Object.values(Labels);
 
 const literals = {
-    tokenPath: TOKEN_PATH,
+    tokenVar: TOKEN_VAR,
     tokenFlag: TOKEN_FLAG,
     labels: Labels
 };

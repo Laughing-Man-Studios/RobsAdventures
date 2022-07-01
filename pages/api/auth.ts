@@ -2,7 +2,7 @@
 import { promises } from 'fs';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getOauth2Client } from '../../common/functions';
-import { TOKEN_FLAG, TOKEN_PATH } from '../../common/literals';
+import { TOKEN_FLAG, TOKEN_VAR } from '../../common/literals';
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,7 +14,7 @@ export default async function handler(
   try {
     const token = await oAuth2Client.getToken(codeStr);
     oAuth2Client.setCredentials(token.tokens);
-    await promises.writeFile(TOKEN_PATH, JSON.stringify(token.tokens));
+    process.env[TOKEN_VAR] = JSON.stringify(token.tokens);
     delete process.env[TOKEN_FLAG];
     res.status(301).redirect('/');
   } catch(err) {
