@@ -24,7 +24,6 @@ const map: React.FC<PropsWithChildren<Map>> = ({
       }
     }, [ref, map]);
   
-    console.log('Children', children);
     return (<div ref={ref} id="map" className={mapStyles.container}>
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {

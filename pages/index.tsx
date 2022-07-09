@@ -3,9 +3,10 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import GoogleMap from '../components/map/container'
-import { PrismaClient, Location } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { CURRENT_TRIP } from '../common/literals'
 import { ModifiedLocation } from '../common/types'
+import TimeTable from '../components/table'
 
 const prisma = new PrismaClient(); 
 
@@ -34,8 +35,19 @@ const Home: NextPage<Props> = ({ tokenURL, apiKey, locations }) => {
           I will be updating my location using my satellite communicator every 2 hours. Each marker on the map indicates a location emission. You can 
           also read my updates from the trail which I will try to post at least once a day. Enjoy! 
         </p>
+        <div id='map' className={styles.section}>
+          <h2 className={styles.sectionHeader}>Map</h2>
+          <p>
+            This shows all of the different points on my trip where I triggered my satellite locator. 
+            Each numbered point on the map corrisponds with the same number in the table to the right of the map. 
+            The table shows the time at which location was triggered by me.
+          </p>
+          <div className={styles.mapContent}>
+            <GoogleMap apiKey={apiKey} locations={locations} />
+            <TimeTable locations={locations} />
+          </div>
+        </div>
 
-        <GoogleMap apiKey={apiKey} locations={locations}></GoogleMap>
         
         <p>{tokenURL}</p>
       </main>
@@ -56,7 +68,7 @@ const Home: NextPage<Props> = ({ tokenURL, apiKey, locations }) => {
   )
 }
 
-async function getLocations(): ModifiedLocation {
+async function getLocations(): Promise<ModifiedLocation[]> {
   const locationData = await prisma.location.findMany({
     where: {
       trip: {
