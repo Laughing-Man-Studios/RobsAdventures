@@ -20,14 +20,14 @@ const Home: NextPage<Props> = ({ tokenURL, apiKey, locations }) => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Rob's Adventures</title>
+        <title>Robs Adventures</title>
         <meta name="description" content="A website that tracks Rob on his hiking adventures" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to Rob's Adventures!
+          Welcome to Robs Adventures!
         </h1>
 
         <p className={styles.description}>

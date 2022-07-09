@@ -7,7 +7,7 @@ interface Map {
   zoom: number;
 }
 
-const map: React.FC<PropsWithChildren<Map>> = ({
+const Map: React.FC<PropsWithChildren<Map>> = ({
     center,
     zoom,
     children
@@ -34,4 +34,4 @@ const map: React.FC<PropsWithChildren<Map>> = ({
     </div>);
   }
 
-  export default map;
+  export default Map;
