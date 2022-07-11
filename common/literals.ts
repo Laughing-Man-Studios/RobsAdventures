@@ -1,5 +1,5 @@
-export const TOKEN_VAR = 'TOKEN';
-export const TOKEN_FLAG = 'AUTH_ROUTE';
+export const GMAIL_TOKEN_VAR = 'GMAIL_TOKEN';
+export const GMAIL_TOKEN_FLAG = 'AUTH_ROUTE';
 export const CURRENT_TRIP = 'RITO_ALTO_FOUR_PASS_LOOP';
 
 export enum Labels {
@@ -10,8 +10,8 @@ export enum Labels {
 export const LabelsList = Object.values(Labels);
 
 const literals = {
-    tokenVar: TOKEN_VAR,
-    tokenFlag: TOKEN_FLAG,
+    tokenVar: GMAIL_TOKEN_VAR,
+    tokenFlag: GMAIL_TOKEN_FLAG,
     labels: Labels,
     currentTrip: CURRENT_TRIP
 };

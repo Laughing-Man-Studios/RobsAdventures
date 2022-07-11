@@ -14,7 +14,7 @@ model Location {
   id        Int      @id @default(autoincrement())
   gmailId   String   @unique
   trip      Trip     @relation("TripLocation", fields: [tripId], references: [id])
-  tripId    Int      @unique
+  tripId    Int      
   longitude String 
   latitude  String   
   createdAt DateTime @default(now())
@@ -25,7 +25,7 @@ model Messages {
   id        Int      @id @default(autoincrement())
   gmailId   String   @unique
   trip      Trip     @relation("TripMessage", fields: [tripId], references: [id])
-  tripId    Int      @unique
+  tripId    Int      
   message   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -34,6 +34,11 @@ model Messages {
 model Trip {
   id        Int       @id @default(autoincrement())
   name      String    @unique
-  location  Location? @relation("TripLocation")
-  messages  Messages? @relation("TripMessage")
+  location  Location[] @relation("TripLocation")
+  messages  Messages[] @relation("TripMessage")
+}
+
+model Authentication {
+  name      String    @unique
+  value     String   
 }

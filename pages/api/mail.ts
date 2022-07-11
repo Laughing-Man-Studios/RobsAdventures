@@ -1,11 +1,11 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { CURRENT_TRIP, Labels, LabelsList, TOKEN_FLAG, TOKEN_VAR } from '../../common/literals';
+import { CURRENT_TRIP, Labels, LabelsList, GMAIL_TOKEN_FLAG, GMAIL_TOKEN_VAR } from '../../common/literals';
 import { getOauth2Client } from '../../common/functions';
 import { OAuth2Client } from 'google-auth-library';
 import { gmail_v1, google } from 'googleapis';
 import { TokenError } from '../../common/errors';
-import { PrismaClient } from '@prisma/client';
+import { Authentication, PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 interface LocationData {
@@ -19,7 +19,7 @@ export default async function handler(
 ) {
     const oAuth2Client = getOauth2Client(res);  
     try {
-      getToken(oAuth2Client);
+      await getToken(oAuth2Client);
       await getAndSaveMail(oAuth2Client);
       res.status(200).send('Success');
     } catch (err) {
@@ -32,13 +32,21 @@ export default async function handler(
     }
 }
 
-function getToken(oAuth2Client: OAuth2Client) {
-  const token = process.env[TOKEN_VAR];
+async function getToken(oAuth2Client: OAuth2Client) {
+  const token = await getTokenFromDB();
   if (token) {
-    oAuth2Client.setCredentials(JSON.parse(token.toString()));
+    oAuth2Client.setCredentials(JSON.parse(token.value.toString()));
   } else {
-    throw new TokenError('TOKEN_VAR enviornment variable is not set. Need to authenticate with Google.');
+    throw new TokenError('GMAIL_TOKEN is not set. Need to authenticate with Google.');
   }
+}
+
+async function getTokenFromDB(): Promise<Authentication | null> {
+  return await prisma.authentication.findFirst({
+    where: {
+      name: GMAIL_TOKEN_VAR
+    }
+  })
 }
 
 function getAuthUrl(oAuth2Client: OAuth2Client, err: unknown) {
@@ -46,7 +54,7 @@ function getAuthUrl(oAuth2Client: OAuth2Client, err: unknown) {
     access_type: 'offline',
     scope: ['https://www.googleapis.com/auth/gmail.readonly'],
   });
-  process.env[TOKEN_FLAG] = authUrl;
+  process.env[GMAIL_TOKEN_FLAG] = authUrl;
   console.log('No Token Available. Need to Authenticate with Google to get Token file. Err: '+err);
 }
 
@@ -115,7 +123,6 @@ async function saveLocationMessages(
           const message = Buffer.from(encodedMessage, 'base64').toString();
 
           const { latitude, longitude } = getLocationData(message || '');
-          console.log(latitude, longitude);
           try {
             await prisma.location.create({
               data: {
@@ -150,7 +157,7 @@ async function saveUpdateMessages(
     if (updateMessages && updateMessages.length > 0) {
       for(let message of updateMessages) {
         try {
-          const messageEntry = await prisma.location.findFirst({
+          const messageEntry = await prisma.messages.findFirst({
             where: {
               gmailId: message.id
             }
