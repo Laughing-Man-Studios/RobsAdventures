@@ -6,8 +6,11 @@
 \* -------------------------------------*/
 
 const { PrismaClient } = require('@prisma/client');
+const trips = ['RITO_ALTO_FOUR_PASS_LOOP', 'JOHN_MUIR_TRAIL'];
 const prisma = new PrismaClient();
-const trips = ['RITO_ALTO_FOUR_PASS_LOOP','JOHN_MUIR_TRAIL'];
+const TRIP_TO_REPLACE = 'RITO_ALTO_FOUR_PASS_LOOP';
+const TRIP_TO_REPLACE_WITH = 'WOODLAND_LAKE';
+
 
 
 async function main() {
@@ -27,6 +30,15 @@ async function main() {
       })
     }
   }
+  // Update Rito Alto Four Pass Loop With Woodland Pond
+  await prisma.Trip.update({
+    where: {
+      name: TRIP_TO_REPLACE
+    },
+    data: {
+      name: TRIP_TO_REPLACE_WITH
+    }
+  })
 }
   
 main()
