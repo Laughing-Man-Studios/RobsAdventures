@@ -7,3 +7,12 @@ export type ModifiedLocation = {
   createdAt: string
   updatedAt: string
 }
+
+export type ModifiedMessage = {
+  id: number
+  gmailId: string
+  tripId: number
+  message: string
+  createdAt: string
+  updatedAt: string
+}

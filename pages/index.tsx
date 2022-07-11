@@ -5,8 +5,9 @@ import styles from '../styles/Home.module.css'
 import GoogleMap from '../components/map/container'
 import { PrismaClient } from '@prisma/client'
 import { CURRENT_TRIP } from '../common/literals'
-import { ModifiedLocation } from '../common/types'
+import { ModifiedLocation, ModifiedMessage } from '../common/types'
 import TimeTable from '../components/table'
+import Blog from '../components/blog'
 
 const prisma = new PrismaClient(); 
 
@@ -14,9 +15,10 @@ type Props = {
   tokenURL: String | null,
   apiKey: string,
   locations: ModifiedLocation[]
+  messages: ModifiedMessage[]
 }
 
-const Home: NextPage<Props> = ({ tokenURL, apiKey, locations }) => {
+const Home: NextPage<Props> = ({ tokenURL, apiKey, locations, messages }) => {
   return (
     <div className={styles.container}>
       <Head>
@@ -32,7 +34,7 @@ const Home: NextPage<Props> = ({ tokenURL, apiKey, locations }) => {
 
         <p className={styles.description}>
           This site is a place for me to host my pictures and journal entries as well as post my locations while I am on my long distance hiking trips.
-          I will be updating my location using my satellite communicator every 2 hours. Each marker on the map indicates a location emission. You can 
+          I will be updating my location using my satellite communicator a few times a day. Each marker on the map indicates a location emission. You can 
           also read my updates from the trail which I will try to post at least once a day. Enjoy! 
         </p>
         <div id='map' className={styles.section}>
@@ -46,6 +48,14 @@ const Home: NextPage<Props> = ({ tokenURL, apiKey, locations }) => {
             <GoogleMap apiKey={apiKey} locations={locations} />
             <TimeTable locations={locations} />
           </div>
+        </div>
+        <div id='blog' className={styles.section}>
+          <h2 className={styles.sectionHeader}>Blog</h2>
+          <p>
+            This is a small blog where I will be posting updates from my trip. I will try to write something out each day.
+            Since my satellite communicator has a limit of a little over a 200 characters, my messages will probably be pretty brief.
+          </p>
+          <Blog messages={messages} />
         </div>
 
         
@@ -93,14 +103,36 @@ async function getLocations(): Promise<ModifiedLocation[]> {
   });
 }
 
+async function getMessages(): Promise<ModifiedMessage[]> {
+  const messageData = await prisma.messages.findMany({
+    where: {
+      trip: {
+        name: CURRENT_TRIP
+      }
+    }
+  });
+
+  return messageData.map((
+    {id, gmailId, tripId, message, createdAt, updatedAt}
+  ) => {
+    return {
+      id,
+      gmailId,
+      tripId,
+      message,
+      createdAt: createdAt.toString(),
+      updatedAt: updatedAt.toString()
+    }
+  })
+}
+
 export async function getServerSideProps() {
-  console.log('GETTING SERVERSIDE PROPS: tokenURL='+process.env.AUTH_ROUTE);
-  
   return {
     props: {
       tokenURL:process.env.AUTH_ROUTE || null,
       apiKey: process.env.GOOGLE_MAPS_API_KEY || '',
-      locations: await getLocations()
+      locations: await getLocations(),
+      messages: await getMessages()
     }
   };
 }

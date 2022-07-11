@@ -6,7 +6,7 @@ type TimeTable = {
     locations: ModifiedLocation[]
 }
 
-const timeTable: React.FC<TimeTable> = ({ locations }) => {
+const TimeTable: React.FC<TimeTable> = ({ locations }) => {
     return (
         <table className={styles.table}>
             <thead>
@@ -31,4 +31,4 @@ const timeTable: React.FC<TimeTable> = ({ locations }) => {
     );
 }
 
-export default timeTable;
+export default TimeTable;
