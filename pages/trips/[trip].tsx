@@ -1,10 +1,10 @@
 import type { NextPage } from 'next'
-import { AppProps } from '../common/types'
-import { getLocations, getMessages, getTrips } from '../common/functions'
-import Main from '../components/main'
+import { AppProps } from '../../common/types'
+import { getLocations, getMessages, getTrips } from '../../common/functions'
+import Main from '../../components/main'
 
 
-const Home: NextPage<AppProps> = ({ tokenURL, apiKey, locations, messages, trips }) => {
+const Trips: NextPage<AppProps> = ({ tokenURL, apiKey, locations, messages, trips }) => {
   return (<Main 
     tokenURL={tokenURL}
     apiKey={apiKey}
@@ -27,4 +27,4 @@ export async function getServerSideProps() {
   };
 }
 
-export default Home
+export default Trips;

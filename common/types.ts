@@ -16,3 +16,11 @@ export type ModifiedMessage = {
   createdAt: string
   updatedAt: string
 }
+
+export type AppProps = {
+  tokenURL: String | null,
+  apiKey: string,
+  locations: ModifiedLocation[]
+  messages: ModifiedMessage[]
+  trips: {name: string}[]
+}
