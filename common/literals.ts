@@ -1,6 +1,6 @@
 export const GMAIL_TOKEN_VAR = 'GMAIL_TOKEN';
 export const GMAIL_TOKEN_FLAG = 'AUTH_ROUTE';
-export const CURRENT_TRIP = 'WOODLAND_LAKE';
+export const CURRENT_TRIP = 'JOHN_MUIR_TRAIL';
 
 export enum Labels {
     Location = 'Zoleo/Location',

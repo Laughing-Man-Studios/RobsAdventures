@@ -24,7 +24,7 @@ const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips
                 substr[0].toUpperCase();
                 return substr;
               }).join(' ');
-              return (<Link href={href}><a>{display}</a></Link>);
+              return (<Link key={name} href={`/trips/${href}`}><a>{display}</a></Link>);
             }) }
           </nav>
           <main className={styles.main}>

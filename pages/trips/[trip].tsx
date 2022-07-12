@@ -2,6 +2,7 @@ import type { NextPage } from 'next'
 import { AppProps } from '../../common/types'
 import { getLocations, getMessages, getTrips } from '../../common/functions'
 import Main from '../../components/main'
+import { CURRENT_TRIP } from '../../common/literals'
 
 
 const Trips: NextPage<AppProps> = ({ tokenURL, apiKey, locations, messages, trips }) => {
@@ -15,13 +16,14 @@ const Trips: NextPage<AppProps> = ({ tokenURL, apiKey, locations, messages, trip
 }
 
 
-export async function getServerSideProps() {
+export async function getServerSideProps(context: any) {
+  const { trip } = context.query;
   return {
     props: {
       tokenURL:process.env.AUTH_ROUTE || null,
       apiKey: process.env.GOOGLE_MAPS_API_KEY || '',
-      locations: await getLocations(),
-      messages: await getMessages(),
+      locations: await getLocations(trip || CURRENT_TRIP),
+      messages: await getMessages(trip || CURRENT_TRIP),
       trips: await getTrips()
     }
   };

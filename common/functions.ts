@@ -21,11 +21,11 @@ export function getOauth2Client(res: NextApiResponse<String>): OAuth2Client {
 }
 
 
-export async function getLocations(): Promise<ModifiedLocation[]> {
+export async function getLocations(trip: String): Promise<ModifiedLocation[]> {
   const locationData = await prisma.location.findMany({
     where: {
       trip: {
-        name: CURRENT_TRIP
+        name: trip.toUpperCase()
       }
     }
   });
@@ -46,11 +46,11 @@ export async function getLocations(): Promise<ModifiedLocation[]> {
   });
 }
 
-export async function getMessages(): Promise<ModifiedMessage[]> {
+export async function getMessages(trip: string): Promise<ModifiedMessage[]> {
   const messageData = await prisma.messages.findMany({
     where: {
       trip: {
-        name: CURRENT_TRIP
+        name: trip.toUpperCase()
       }
     }
   });
