@@ -6,8 +6,9 @@ import styles from '../styles/Home.module.css'
 import GoogleMap from '../components/map/container'
 import TimeTable from '../components/table'
 import Blog from '../components/blog'
+import { CURRENT_TRIP } from "../common/literals";
 
-const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips }) => {
+const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips, page }) => {
     return (
         <div className={styles.container}>
           <Head>
@@ -15,16 +16,22 @@ const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips
             <meta name="description" content="A website that tracks Rob on his hiking adventures" />
             <link rel="icon" href="/favicon.ico" />
           </Head>
-          <nav>
-            <span>Nav</span>
+          <nav className={styles.nav}>
+            <span className={styles.navLabel}>Navigation</span>
             { trips.map(({ name }) => {
               const href = name.toLowerCase();
               const display = name.split('_').map(substr => {
-                substr.toLowerCase()
-                substr[0].toUpperCase();
-                return substr;
+                const str = substr.toLowerCase();
+                return str.charAt(0).toUpperCase() + str.slice(1);
               }).join(' ');
-              return (<Link key={name} href={`/trips/${href}`}><a>{display}</a></Link>);
+              return (
+                <div className={styles.linkContainer}>
+                  { name === page && <div className={styles.rightEqui}/>}        
+                  <Link key={name} href={`/trips/${href}`}>
+                    <a>{display}</a>
+                  </Link>
+                </div>
+              );
             }) }
           </nav>
           <main className={styles.main}>

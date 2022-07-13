@@ -18,6 +18,7 @@ export type ModifiedMessage = {
 }
 
 export type AppProps = {
+  page: string
   tokenURL: String | null,
   apiKey: string,
   locations: ModifiedLocation[]
