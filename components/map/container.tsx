@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Wrapper, Status } from "@googlemaps/react-wrapper";
 import Map from "./map";
-import {  Location } from '@prisma/client'
+import {  Trip } from '@prisma/client'
 import Marker from "./marker";
 import { ModifiedLocation } from "../../common/types";
 
@@ -14,15 +14,16 @@ const render = (status: Status): JSX.Element => {
 interface MapContainer {
   apiKey: string,
   locations: ModifiedLocation[]
+  mapCoords: Trip,
+  page: string;
 }
 
-const container: React.FC<MapContainer> = ({ apiKey, locations }) => {
-  const center = { lat: 39.96284, lng: -105.63268 } as google.maps.LatLngLiteral;
-  const zoom = 14;
+const container: React.FC<MapContainer> = ({ apiKey, locations, mapCoords, page }) => {
+  const center = { lat: mapCoords.lat, lng: mapCoords.lng } as google.maps.LatLngLiteral;
 
   return (
       <Wrapper apiKey={apiKey} render={render}>
-        <Map center={center} zoom={zoom}>
+        <Map key={page} center={center} zoom={mapCoords.zoom}>
           {locations.map((location) => 
             <Marker 
               key={location.id}

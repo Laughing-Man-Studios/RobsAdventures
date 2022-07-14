@@ -34,6 +34,9 @@ model Messages {
 model Trip {
   id        Int       @id @default(autoincrement())
   name      String    @unique
+  lng       Float     @default(0)
+  lat       Float     @default(0)
+  zoom      Int       @default(0)
   location  Location[] @relation("TripLocation")
   messages  Messages[] @relation("TripMessage")
 }

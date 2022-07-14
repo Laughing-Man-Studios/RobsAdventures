@@ -6,27 +6,50 @@
 \* -------------------------------------*/
 
 const { PrismaClient } = require('@prisma/client');
-const trips = ['RITO_ALTO_FOUR_PASS_LOOP', 'JOHN_MUIR_TRAIL', 'WOODLAND_LAKE'];
+const trips = [
+  { 
+    name: 'RITO_ALTO_FOUR_PASS_LOOP',
+    zoom: 3,
+    lng: 0,
+    lat: 0
+  },
+  { 
+    name: 'JOHN_MUIR_TRAIL',
+    zoom: 8,
+    lng: -118.86505,
+    lat: 37.090345
+  },
+  { 
+    name: 'WOODLAND_LAKE',
+    zoom: 14,
+    lng: -105.63268,
+    lat: 39.96284
+  },
+]
 const prisma = new PrismaClient();
 
 
 
 async function main() {
-  for (const trip of trips) {
-    const jmtTrip = await prisma.Trip.findUnique({
+  for (const { name, zoom, lng, lat } of trips) {
+    console.log(`Adding ${name} to TRIP table`);
+    await prisma.Trip.upsert({
         where: {
-            name: trip
+          name
+        },
+        update: {
+            name,
+            zoom,
+            lng,
+            lat
+        },
+        create: {
+          name,
+            zoom,
+            lng,
+            lat
         }
     });
-
-    if (!jmtTrip) {
-      console.log(`Adding ${trip} to TRIP table`)
-      await prisma.Trip.create({
-          data: {
-              name: trip
-          }
-      })
-    }
   }
 }
   

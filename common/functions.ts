@@ -1,9 +1,8 @@
 import { google } from 'googleapis'
 import { OAuth2Client } from 'google-auth-library'
 import { NextApiResponse } from 'next';
-import { CURRENT_TRIP } from '../common/literals'
 import { ModifiedLocation, ModifiedMessage } from '../common/types'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Trip } from '@prisma/client'
 
 const prisma = new PrismaClient(); 
 
@@ -71,12 +70,8 @@ export async function getMessages(trip: string): Promise<ModifiedMessage[]> {
   })
 }
 
-export async function getTrips(): Promise<{name: string}[]> {
-  const trips = await prisma.trip.findMany({
-    select: {
-      name: true
-    }
-  });
+export async function getTrips(): Promise<Trip[]> {
+  const trips = await prisma.trip.findMany();
   await prisma.$disconnect();
 
   return trips;

@@ -1,3 +1,5 @@
+import { Trip } from "@prisma/client"
+
 export type ModifiedLocation = {
   id: number
   gmailId: string
@@ -23,5 +25,5 @@ export type AppProps = {
   apiKey: string,
   locations: ModifiedLocation[]
   messages: ModifiedMessage[]
-  trips: {name: string}[]
+  trips: Trip[]
 }

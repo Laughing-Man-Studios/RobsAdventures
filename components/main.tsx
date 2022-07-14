@@ -6,9 +6,10 @@ import styles from '../styles/Home.module.css'
 import GoogleMap from '../components/map/container'
 import TimeTable from '../components/table'
 import Blog from '../components/blog'
-import { CURRENT_TRIP } from "../common/literals";
+import { Trip } from "@prisma/client";
 
 const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips, page }) => {
+    const mapCoords = trips.find(trip => trip.name === page.toUpperCase()) || {} as Trip;
     return (
         <div className={styles.container}>
           <Head>
@@ -25,9 +26,9 @@ const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips
                 return str.charAt(0).toUpperCase() + str.slice(1);
               }).join(' ');
               return (
-                <div className={styles.linkContainer}>
+                <div key={name} className={styles.linkContainer}>
                   { name === page && <div className={styles.rightEqui}/>}        
-                  <Link key={name} href={`/trips/${href}`}>
+                  <Link href={`/trips/${href}`}>
                     <a>{display}</a>
                   </Link>
                 </div>
@@ -44,7 +45,7 @@ const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips
               I will be updating my location using my satellite communicator a few times a day. Each marker on the map indicates a location emission. You can 
               also read my updates from the trail which I will try to post at least once a day. Enjoy! 
             </p>
-            <div id='map' className={styles.section}>
+            <div id='map-section' className={styles.section}>
               <h2 className={styles.sectionHeader}>Map</h2>
               <p>
                 This shows all of the different points on my trip where I triggered my satellite locator. 
@@ -52,11 +53,11 @@ const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips
                 The table shows the time at which location was triggered by me.
               </p>
               <div className={styles.mapContent}>
-                <GoogleMap apiKey={apiKey} locations={locations} />
+                <GoogleMap apiKey={apiKey} locations={locations} mapCoords={mapCoords} page={page}/>
                 <TimeTable locations={locations} />
               </div>
             </div>
-            <div id='blog' className={styles.section}>
+            <div id='blog-section' className={styles.section}>
               <h2 className={styles.sectionHeader}>Blog</h2>
               <p>
                 This is a small blog where I will be posting updates from my trip. I will try to write something out each day.

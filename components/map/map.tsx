@@ -1,5 +1,4 @@
-import { prependOnceListener } from "process";
-import React, { Children, PropsWithChildren } from "react";
+import React, { PropsWithChildren } from "react";
 import mapStyles from "../../styles/Map.module.css"
 
 interface Map {
@@ -22,7 +21,7 @@ const Map: React.FC<PropsWithChildren<Map>> = ({
           center
         }));
       }
-    }, [ref, map]);
+    }, [ref, map, zoom, center]);
   
     return (<div ref={ref} id="map" className={mapStyles.container}>
       {React.Children.map(children, (child) => {
