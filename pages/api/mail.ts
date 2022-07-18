@@ -29,7 +29,7 @@ export default async function handler(
       } else {
         console.log('Not token error');
       }
-      res.status(500).send('Failed to get gmail ');
+      res.status(500).send(err as String);
     }
 }
 
