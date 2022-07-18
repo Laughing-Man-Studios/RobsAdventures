@@ -20,15 +20,16 @@ export default async function handler(
     const oAuth2Client = getOauth2Client(res);  
     try {
       await getToken(oAuth2Client);
+      console.log('got token');
       await getAndSaveMail(oAuth2Client);
       res.status(200).send('Success');
     } catch (err) {
       if (err instanceof TokenError) {
         getAuthUrl(oAuth2Client, err);
       } else {
-        console.log(err);
+        console.log('Not token error');
       }
-      res.status(500).send(err as String);
+      res.status(500).send('Failed to get gmail ');
     }
 }
 
