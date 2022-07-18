@@ -28,7 +28,7 @@ export default async function handler(
       } else {
         console.log(err);
       }
-      res.status(500).send('Failed. Error getting mail from Gmail.');
+      res.status(500).send(err);
     }
 }
 
