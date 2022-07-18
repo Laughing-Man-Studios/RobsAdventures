@@ -61,9 +61,13 @@ function getAuthUrl(oAuth2Client: OAuth2Client, err: unknown) {
 
 async function getAndSaveMail(auth: OAuth2Client) {
   const gmail = google.gmail({version: 'v1', auth});
+  console.log('got gmail instance');
   const labelMap = await getLabels(gmail);
+  console.log('got label map');
   await saveLocationMessages(labelMap, gmail);
+  console.log('saved locations');
   await saveUpdateMessages(labelMap, gmail);
+  console.log('saved blog messages');
 }
 
 async function getLabels(gmail: gmail_v1.Gmail): Promise<Map<string, string>> {
