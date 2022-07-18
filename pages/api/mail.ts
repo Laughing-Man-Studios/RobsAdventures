@@ -97,9 +97,10 @@ async function saveLocationMessages(
   labelMap: Map<string, string>,
   gmail: gmail_v1.Gmail): Promise<void> {
   const locationLabelId = labelMap.get(Labels.Location);
-
+  
   if (locationLabelId) {
     const resp = await gmail.users.messages.list({ userId: 'me', labelIds:[locationLabelId] });
+    console.log('got messages list);
     const { messages: locationMessages } = resp.data;
 
     if (locationMessages && locationMessages.length > 0) {
