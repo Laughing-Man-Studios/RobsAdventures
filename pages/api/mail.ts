@@ -1,4 +1,4 @@
-OP// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { CURRENT_TRIP, Labels, LabelsList, GMAIL_TOKEN_FLAG, GMAIL_TOKEN_VAR } from '../../common/literals';
 import { getOauth2Client } from '../../common/functions';
