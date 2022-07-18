@@ -1,4 +1,4 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+OP// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { CURRENT_TRIP, Labels, LabelsList, GMAIL_TOKEN_FLAG, GMAIL_TOKEN_VAR } from '../../common/literals';
 import { getOauth2Client } from '../../common/functions';
@@ -100,7 +100,7 @@ async function saveLocationMessages(
   
   if (locationLabelId) {
     const resp = await gmail.users.messages.list({ userId: 'me', labelIds:[locationLabelId] });
-    console.log('got messages list);
+    console.log('got messages list');
     const { messages: locationMessages } = resp.data;
 
     if (locationMessages && locationMessages.length > 0) {
