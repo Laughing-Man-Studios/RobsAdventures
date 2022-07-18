@@ -20,7 +20,6 @@ export default async function handler(
     const oAuth2Client = getOauth2Client(res);  
     try {
       await getToken(oAuth2Client);
-      console.log('got token');
       await getAndSaveMail(oAuth2Client);
       res.status(200).send('Success');
     } catch (err) {
