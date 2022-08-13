@@ -25,6 +25,12 @@ const trips = [
     lng: -105.63268,
     lat: 39.96284
   },
+  {
+    name: 'DECALIBRON',
+    zoom: 14,
+    lng: -106.12010,
+    lat: 39.33911
+  }
 ]
 const prisma = new PrismaClient();
 
