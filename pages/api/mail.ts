@@ -128,19 +128,21 @@ async function saveLocationMessages(
           const message = Buffer.from(encodedMessage, 'base64').toString();
 
           const { latitude, longitude } = getLocationData(message || '');
-          try {
-            await prisma.location.create({
-              data: {
-                gmailId: data.id || '',
-                trip: {
-                  connect: { name: CURRENT_TRIP }
-                },
-                latitude,
-                longitude
-              }
-            })
-          } catch(err) {
-            console.log(err);
+          if (latitude && longitude) {
+            try {
+              await prisma.location.create({
+                data: {
+                  gmailId: data.id || '',
+                  trip: {
+                    connect: { name: CURRENT_TRIP }
+                  },
+                  latitude,
+                  longitude
+                }
+              })
+            } catch(err) {
+              console.log(err);
+            }
           }
   
           await prisma.$disconnect();
