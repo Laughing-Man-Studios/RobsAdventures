@@ -17,11 +17,11 @@ const TimeTable: React.FC<TimeTable> = ({ locations }) => {
             </thead>
             <tbody>
             {
-                locations.map(({ id, createdAt }) => {
+                locations.map(({ id, dateTime }) => {
                     return (
                         <tr key={id}>
                             <th scope="row">{id}</th>
-                            <td className={styles.row}>{createdAt}</td>
+                            <td className={styles.row}>{dateTime}</td>
                         </tr>
                     )
                 })

@@ -6,8 +6,6 @@ import { PrismaClient, Trip } from '@prisma/client'
 
 const prisma = new PrismaClient(); 
 
-
-
 export function getOauth2Client(res: NextApiResponse<String>): OAuth2Client {
   const { GOOGLE_CREDENTIALS } = process.env;
   if (GOOGLE_CREDENTIALS) {
@@ -30,8 +28,10 @@ export async function getLocations(trip: String): Promise<ModifiedLocation[]> {
   });
   await prisma.$disconnect();
 
+  locationData.sort((a, b) => b.dateTime.getTime() - a.dateTime.getTime());
+
   return locationData.map((
-    {id, gmailId, tripId, longitude, latitude, createdAt, updatedAt}
+    {id, gmailId, tripId, longitude, latitude, dateTime}
   ) => {
     return {
       id,
@@ -39,8 +39,7 @@ export async function getLocations(trip: String): Promise<ModifiedLocation[]> {
       tripId,
       longitude,
       latitude,
-      createdAt: createdAt.toString(),
-      updatedAt: updatedAt.toString()
+      dateTime: dateTime.toString()
     }
   });
 }
@@ -56,16 +55,17 @@ export async function getMessages(trip: string): Promise<ModifiedMessage[]> {
 
   await prisma.$disconnect();
 
+  messageData.sort((a, b) => b.dateTime.getTime() - a.dateTime.getTime());
+
   return messageData.map((
-    {id, gmailId, tripId, message, createdAt, updatedAt}
+    {id, gmailId, tripId, message, dateTime}
   ) => {
     return {
       id,
       gmailId,
       tripId,
       message,
-      createdAt: createdAt.toString(),
-      updatedAt: updatedAt.toString()
+      dateTime: dateTime.toString()
     }
   })
 }

@@ -6,8 +6,7 @@ export type ModifiedLocation = {
   tripId: number
   longitude: string
   latitude: string
-  createdAt: string
-  updatedAt: string
+  dateTime: string
 }
 
 export type ModifiedMessage = {
@@ -15,8 +14,7 @@ export type ModifiedMessage = {
   gmailId: string
   tripId: number
   message: string
-  createdAt: string
-  updatedAt: string
+  dateTime: string
 }
 
 export type AppProps = {

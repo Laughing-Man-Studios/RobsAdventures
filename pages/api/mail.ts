@@ -136,6 +136,7 @@ async function saveLocationMessages(
                   trip: {
                     connect: { name: CURRENT_TRIP }
                   },
+                  dateTime: data.internalDate && Number(data.internalDate) !== NaN ? new Date(Number(data.internalDate)) : new Date(),
                   latitude,
                   longitude
                 }
@@ -193,6 +194,7 @@ async function saveUpdateMessages(
                 trip: {
                   connect: { name: CURRENT_TRIP }
                 },
+                dateTime: data.internalDate && Number(data.internalDate) !== NaN ? new Date(Number(data.internalDate)) : new Date(),
                 message
               }
             })
