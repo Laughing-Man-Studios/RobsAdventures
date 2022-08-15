@@ -5,5 +5,5 @@
 tasks:
   - init: npm install && npm run build
     command: npm run start
-
+image: gitpod/workspace-postgres:latest
 
