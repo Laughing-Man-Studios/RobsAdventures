@@ -110,7 +110,6 @@
 }
 
 .section {
-  height: 100vh;
   width: 100%;
 }
 .sectionHeader {
@@ -148,10 +147,24 @@
   margin: 0 2rem;
   align-items: center;
 }
+.mobileNav {
+  display: none;
+}
 
-@media (max-width: 600px) {
-  .grid {
-    width: 100%;
-    flex-direction: column;
+@media (max-width: 1024px) {
+  .nav {
+    display: none;
+  }
+  .mobileNav {
+    padding:1rem 0rem;
+  }
+  .description {
+    padding: 0;
+    margin: 1rem 0;
+    line-height: 1;
+    font-size: 1rem;
+  }
+  .container {
+    padding: 0 1rem;
   }
 }

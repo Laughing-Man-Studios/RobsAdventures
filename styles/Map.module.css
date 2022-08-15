@@ -3,6 +3,11 @@
     width: 60vw;
 }
 
+.tableContainer {
+    overflow: scroll;
+    height: 50vh;
+}
+
 .table {
     margin-left: 2rem;
 }

@@ -35,6 +35,9 @@ const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips
               );
             }) }
           </nav>
+          <nav className={styles.mobileNav}>
+            Mobile Nav
+          </nav>
           <main className={styles.main}>
             <h1 className={styles.title}>
               Welcome to Robs Adventures!
