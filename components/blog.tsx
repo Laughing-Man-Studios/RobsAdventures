@@ -9,7 +9,7 @@ const Blog: React.FC<Blog> = ({ messages }) => {
         <div className={styles.messageContainer}>
             { messages.map(message => (
                 <div key={message.id}>
-                    <h3>Date: {message.createdAt}</h3>
+                    <h3>Date: {message.dateTime}</h3>
                     <p>{message.message}</p>
                 </div>
 
