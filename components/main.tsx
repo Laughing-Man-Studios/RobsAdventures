@@ -1,15 +1,18 @@
 import { AppProps } from "../common/types";
-import Head from 'next/head'
-import Image from 'next/image'
-import Link from 'next/link'
-import styles from '../styles/Home.module.css'
-import GoogleMap from '../components/map/container'
-import TimeTable from '../components/table'
-import Blog from '../components/blog'
+import Head from 'next/head';
+import Image from 'next/image';
+import Link from 'next/link';
+import styles from '../styles/Home.module.css';
+import GoogleMap from '../components/map/container';
+import TimeTable from '../components/table';
+import Blog from '../components/blog';
+import MobileNav from "./nav/mobile";
+import WebNav from "./nav/web";
 import { Trip } from "@prisma/client";
 
 const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips, page }) => {
     const mapCoords = trips.find(trip => trip.name === page.toUpperCase()) || {} as Trip;
+
     return (
         <div className={styles.container}>
           <Head>
@@ -17,27 +20,9 @@ const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips
             <meta name="description" content="A website that tracks Rob on his hiking adventures" />
             <link rel="icon" href="/favicon.ico" />
           </Head>
-          <nav className={styles.nav}>
-            <span className={styles.navLabel}>Navigation</span>
-            { trips.map(({ name }) => {
-              const href = name.toLowerCase();
-              const display = name.split('_').map(substr => {
-                const str = substr.toLowerCase();
-                return str.charAt(0).toUpperCase() + str.slice(1);
-              }).join(' ');
-              return (
-                <div key={name} className={styles.linkContainer}>
-                  { name === page && <div className={styles.rightEqui}/>}        
-                  <Link href={`/trips/${href}`}>
-                    <a>{display}</a>
-                  </Link>
-                </div>
-              );
-            }) }
-          </nav>
-          <nav className={styles.mobileNav}>
-            Mobile Nav
-          </nav>
+
+          <MobileNav trips={trips} page={page} />
+          <WebNav trips={trips} page={page} />
           <main className={styles.main}>
             <h1 className={styles.title}>
               Welcome to Robs Adventures!

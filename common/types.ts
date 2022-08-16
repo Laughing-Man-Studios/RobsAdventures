@@ -1,27 +1,32 @@
-import { Trip } from "@prisma/client"
+import { Trip } from "@prisma/client";
 
 export type ModifiedLocation = {
-  id: number
-  gmailId: string
-  tripId: number
-  longitude: string
-  latitude: string
-  dateTime: string
+  id: number;
+  gmailId: string;
+  tripId: number;
+  longitude: string;
+  latitude: string;
+  dateTime: string;
 }
 
 export type ModifiedMessage = {
-  id: number
-  gmailId: string
-  tripId: number
-  message: string
-  dateTime: string
+  id: number;
+  gmailId: string;
+  tripId: number;
+  message: string;
+  dateTime: string;
 }
 
 export type AppProps = {
-  page: string
-  tokenURL: String | null,
-  apiKey: string,
-  locations: ModifiedLocation[]
-  messages: ModifiedMessage[]
-  trips: Trip[]
+  page: string;
+  tokenURL: String | null;
+  apiKey: string;
+  locations: ModifiedLocation[];
+  messages: ModifiedMessage[];
+  trips: Trip[];
+}
+
+export type NavProps = {
+  trips: Trip[];
+  page: string;
 }

@@ -1,0 +1,78 @@
+
+.nav {
+    font-size: large;
+    font-weight: 500;
+    border-bottom-style: solid;
+    border-bottom-width: 0.2rem;
+    padding:1rem 0rem;
+    display: flex;
+}
+.navLabel {
+    margin-right: 2rem;
+    font-weight: 700;
+}
+.mobileNav {
+    display: none;
+}
+
+.rightEqui {
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent; 
+    border-left: 8px solid black;
+    padding-right: 0.5rem;
+
+}
+.linkContainer {
+    display: flex;
+    margin: 0 2rem;
+    align-items: center;
+}
+
+@media (max-width: 1024px) {
+    .hamburger {
+        background-color: white;
+        border: none;
+        padding-top: 1rem;
+    }
+    .hamburgerLayer {
+        width: 35px;
+        height: 5px;
+        background-color: black;
+        margin: 6px 0;
+    }
+    .nav {
+        display: none;
+    }
+    .mobileNav {
+        padding:1rem 0rem;
+        display: initial;
+    }
+    .mobileNavList {
+        position: absolute;
+        width: calc(100% - 2rem);
+        background-color: white;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: solid 2px black;
+        
+    }
+    .navLinkContainer {
+        display: flex;
+        width: 100%;
+        padding: 1.5rem 0;
+        border-bottom: black 2px solid;
+        font-size: larger;
+    }
+    .navLinkContainer:last-child {
+        border: none;
+    }
+    .rightEqui {
+        position: relative;
+        left: 20px;
+        top: 5px;
+    }
+}
