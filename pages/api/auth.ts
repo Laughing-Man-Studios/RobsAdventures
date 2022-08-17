@@ -1,9 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { PrismaClient } from '@prisma/client';
-import { promises } from 'fs';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getOauth2Client } from '../../common/functions';
 import { GMAIL_TOKEN_FLAG, GMAIL_TOKEN_VAR } from '../../common/literals';
+import { Credentials } from 'google-auth-library';
 const prisma = new PrismaClient(); 
 
 export default async function handler(
@@ -16,7 +16,7 @@ export default async function handler(
   try {
     const token = await oAuth2Client.getToken(codeStr);
     oAuth2Client.setCredentials(token.tokens);
-    await setTokenInDB(JSON.stringify(token.tokens));
+    await setTokenInDB(token.tokens);
     delete process.env[GMAIL_TOKEN_FLAG];
     res.status(301).redirect('/');
   } catch(err) {
@@ -25,18 +25,36 @@ export default async function handler(
   }
 }
 
-async function setTokenInDB(token: string) {
-  await prisma.authentication.upsert({
-    where: {
-      name: GMAIL_TOKEN_VAR
-    },
-    update: {
-      value: token
-    },
-    create: {
-      name: GMAIL_TOKEN_VAR,
-      value: token
-    }
-  });
+async function setTokenInDB(token: Credentials) {
+  const strToken = JSON.stringify(token);
+  if (token.refresh_token) {
+    await prisma.authentication.upsert({
+      where: {
+        name: GMAIL_TOKEN_VAR
+      },
+      update: {
+        value: strToken,
+        reauth: token.refresh_token
+      },
+      create: {
+        name: GMAIL_TOKEN_VAR,
+        value: strToken,
+        reauth: token.refresh_token
+      }
+    });
+  } else {
+    await prisma.authentication.upsert({
+      where: {
+        name: GMAIL_TOKEN_VAR
+      },
+      update: {
+        value: strToken,
+      },
+      create: {
+        name: GMAIL_TOKEN_VAR,
+        value: strToken,
+      }
+    });
+  }
   prisma.$disconnect();
 }

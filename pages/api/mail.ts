@@ -33,9 +33,13 @@ export default async function handler(
 }
 
 async function getToken(oAuth2Client: OAuth2Client) {
-  const token = await getTokenFromDB();
-  if (token) {
-    oAuth2Client.setCredentials(JSON.parse(token.value.toString()));
+  const tokenEntry = await getTokenFromDB();
+  if (tokenEntry) {
+    const token = JSON.parse(tokenEntry.value.toString());
+    if (!token.refresh_token) {
+      token.refresh_token = tokenEntry.reauth;
+    }
+    oAuth2Client.setCredentials(token);
   } else {
     throw new TokenError('GMAIL_TOKEN is not set. Need to authenticate with Google.');
   }

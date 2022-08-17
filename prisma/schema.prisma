@@ -46,4 +46,5 @@ model Trip {
 model Authentication {
   name      String    @unique
   value     String   
+  reauth    String?
 }
