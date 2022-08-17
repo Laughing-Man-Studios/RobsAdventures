@@ -26,7 +26,7 @@ const MobileNav: React.FC<NavProps> = ({ trips, page }) => {
                 <li key={name} className={styles.navLinkContainer}>
                   { name === page && <div className={styles.rightEqui}/>}        
                   <Link href={`/trips/${href}`}>
-                    <a onClick={handleClose}>{display}</a>
+                    <a className={styles.linkCenter} onClick={handleClose}>{display}</a>
                   </Link>
                 </li>
               );

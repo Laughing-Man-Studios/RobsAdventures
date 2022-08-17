@@ -138,4 +138,8 @@
   .main {
     padding: 1rem 0;
   }
+
+  .mapContent {
+    flex-direction: column;
+  }
 }

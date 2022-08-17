@@ -75,4 +75,7 @@
         left: 20px;
         top: 5px;
     }
+    .linkCenter {
+        margin: 0 auto;
+    }
 }
