@@ -1,9 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { CURRENT_TRIP, Labels, LabelsList, GMAIL_TOKEN_FLAG, GMAIL_TOKEN_VAR } from '../../common/literals';
-import { getOauth2Client } from '../../common/functions';
+import { Labels, LabelsList, GMAIL_TOKEN_FLAG, GMAIL_TOKEN_VAR, DEFAULT_TRIP } from '../../common/literals';
+import { getOauth2Client, toTitleCase, getTrips, labelToDatabaseName, addTrips } from '../../common/functions';
 import { OAuth2Client } from 'google-auth-library';
-import { gmail_v1, google } from 'googleapis';
+import { gmail_v1, google, manufacturers_v1 } from 'googleapis';
 import { TokenError } from '../../common/errors';
 import { Authentication, PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
@@ -11,6 +11,16 @@ const prisma = new PrismaClient();
 interface LocationData {
   longitude: string,
   latitude: string
+}
+
+function getTripLabel(tripLabelMap: Map<string,string>, labelIds: string[] | undefined): string {
+  if (labelIds) {
+    return tripLabelMap.get(
+      Array.from(tripLabelMap.keys())
+      .filter(tripLabel => labelIds.includes(tripLabel))[0]
+    ) || DEFAULT_TRIP;
+  }
+  return DEFAULT_TRIP;
 }
 
 export default async function handler(
@@ -27,6 +37,7 @@ export default async function handler(
         getAuthUrl(oAuth2Client, err);
       } else {
         console.log('Not token error');
+        console.log(err);
       }
       res.status(500).send(err as String);
     }
@@ -46,11 +57,13 @@ async function getToken(oAuth2Client: OAuth2Client) {
 }
 
 async function getTokenFromDB(): Promise<Authentication | null> {
-  return await prisma.authentication.findFirst({
+  const token = await prisma.authentication.findFirst({
     where: {
       name: GMAIL_TOKEN_VAR
     }
-  })
+  });
+  await prisma.$disconnect();
+  return token;
 }
 
 function getAuthUrl(oAuth2Client: OAuth2Client, err: unknown) {
@@ -67,6 +80,8 @@ async function getAndSaveMail(auth: OAuth2Client) {
   console.log('got gmail instance');
   const labelMap = await getLabels(gmail);
   console.log('got label map');
+  await updateTrips(labelMap);
+  console.log('updated trips')
   await saveLocationMessages(labelMap, gmail);
   console.log('saved locations');
   await saveUpdateMessages(labelMap, gmail);
@@ -76,11 +91,12 @@ async function getAndSaveMail(auth: OAuth2Client) {
 async function getLabels(gmail: gmail_v1.Gmail): Promise<Map<string, string>> {
   const labelMap = new Map();
   const { data } = await gmail.users.labels.list({ userId: 'me' });
+  
   if (!data.labels) {
     throw new Error('No Labels in Gmail account! Gmail (or Google API) is screwed up!');
   }
   for(let label of data.labels) {
-    if(label && LabelsList.includes(label.name as Labels)) {
+    if(label && label.name && label.name.includes('Zoleo/')) {
       labelMap.set(label.name, label.id);
     }
   }
@@ -96,10 +112,22 @@ function getLocationData(snippit: string): LocationData {
   };
 }
 
+async function updateTrips(labelMap:Map<string, string>): Promise<void> {
+  const tripNames = Array.from(labelMap.keys())
+    .filter(label => !LabelsList.includes(label as Labels))
+    .map(label => labelToDatabaseName(label));
+  await addTrips(tripNames);
+}
+
 async function saveLocationMessages(
   labelMap: Map<string, string>,
   gmail: gmail_v1.Gmail): Promise<void> {
   const locationLabelId = labelMap.get(Labels.Location);
+  const tripLabelMap = new Map(
+    Array.from(labelMap)
+      .filter((label) => !LabelsList.includes(label[0] as Labels))
+      .map((label) => [label[1],labelToDatabaseName(label[0])])
+  );
   
   if (locationLabelId) {
     const resp = await gmail.users.messages.list({ userId: 'me', labelIds:[locationLabelId] });
@@ -129,16 +157,19 @@ async function saveLocationMessages(
         const parts = data.payload?.parts;
         if (parts && Array.isArray(parts)) {
           const encodedMessage = parts[0].body?.data || '';
-          const message = Buffer.from(encodedMessage, 'base64').toString();
+          const messageText = Buffer.from(encodedMessage, 'base64').toString();
+          const tripName = getTripLabel(tripLabelMap, data.labelIds);
+          const { latitude, longitude } = getLocationData(messageText || '');
 
-          const { latitude, longitude } = getLocationData(message || '');
+          console.log(`Adding location message: ${message.id} to trip: ${tripName}`);
+
           if (latitude && longitude) {
             try {
               await prisma.location.create({
                 data: {
                   gmailId: data.id || '',
                   trip: {
-                    connect: { name: CURRENT_TRIP }
+                    connect: { name: tripName }
                   },
                   dateTime: data.internalDate && Number(data.internalDate) !== NaN ? new Date(Number(data.internalDate)) : new Date(),
                   latitude,
@@ -161,7 +192,12 @@ async function saveUpdateMessages(
   labelMap: Map<string, string>,
   gmail: gmail_v1.Gmail): Promise<void> {
   const updateLabelId = labelMap.get(Labels.Messages);
-
+  const tripLabelMap = new Map(
+    Array.from(labelMap)
+      .filter((label) => !LabelsList.includes(label[0] as Labels))
+      .map((label) => [label[1],labelToDatabaseName(label[0])])
+  );
+  
   if (updateLabelId) {
     const resp = await gmail.users.messages.list({ userId: 'me', labelIds:[updateLabelId] });
     const { messages: updateMessages } = resp.data;
@@ -189,17 +225,20 @@ async function saveUpdateMessages(
         const parts = data.payload?.parts;
         if (parts && Array.isArray(parts)) {
           const encodedMessage = parts[0].body?.data || '';
-          const message = Buffer.from(encodedMessage, 'base64').toString();
+          const messageText = Buffer.from(encodedMessage, 'base64').toString();
+          const tripName = getTripLabel(tripLabelMap, data.labelIds);
+          
+          console.log(`Adding update message: ${message.id} to trip: ${tripName}`);
 
           try {
             await prisma.messages.create({
               data: {
                 gmailId: data.id || '',
                 trip: {
-                  connect: { name: CURRENT_TRIP }
+                  connect: { name: tripName }
                 },
                 dateTime: data.internalDate && Number(data.internalDate) !== NaN ? new Date(Number(data.internalDate)) : new Date(),
-                message
+                message: messageText
               }
             })
           } catch(err) {

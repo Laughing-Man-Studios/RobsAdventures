@@ -1,6 +1,6 @@
 export const GMAIL_TOKEN_VAR = 'GMAIL_TOKEN';
 export const GMAIL_TOKEN_FLAG = 'AUTH_ROUTE';
-export const CURRENT_TRIP = 'JOHN_MUIR_TRAIL';
+export const DEFAULT_TRIP = 'JOHN_MUIR_TRAIL';
 
 export enum Labels {
     Location = 'Zoleo/Location',
@@ -13,6 +13,6 @@ const literals = {
     tokenVar: GMAIL_TOKEN_VAR,
     tokenFlag: GMAIL_TOKEN_FLAG,
     labels: Labels,
-    currentTrip: CURRENT_TRIP
+    defaultTrip: DEFAULT_TRIP
 };
 export default literals

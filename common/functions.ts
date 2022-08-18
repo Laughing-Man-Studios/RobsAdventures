@@ -6,6 +6,17 @@ import { PrismaClient, Trip } from '@prisma/client'
 
 const prisma = new PrismaClient(); 
 
+export function toTitleCase(text: string): string {
+  return text.toLowerCase()
+    .split(' ')
+    .map((s: string) => s.charAt(0).toUpperCase() + s.substring(1))
+    .join(' ');
+}
+
+export function labelToDatabaseName(text: string) {
+  return text.split('/')[1].replaceAll(' ','_').toUpperCase();
+}
+
 export function getOauth2Client(res: NextApiResponse<String>): OAuth2Client {
   const { GOOGLE_CREDENTIALS } = process.env;
   if (GOOGLE_CREDENTIALS) {
@@ -75,4 +86,22 @@ export async function getTrips(): Promise<Trip[]> {
   await prisma.$disconnect();
 
   return trips;
+}
+
+export async function addTrips(names: string[]): Promise<void> {
+  const tripNames = (await getTrips()).map(trip => trip.name);
+  for (const name of names) {
+    if (!tripNames.includes(name)) {
+      console.log('Creating trip entry for '+name);
+      await prisma.trip.create({
+        data: {
+          name: name,
+          zoom: 3,
+          lng: 0,
+          lat: 0
+        }
+      });
+    }
+  }
+
 }
