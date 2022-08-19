@@ -9,19 +9,22 @@
     "node": "16.x",
     "npm": "8.x"
   },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean-db": "npx prisma migrate reset"
   },
   "dependencies": {
     "@googlemaps/react-wrapper": "^1.1.35",
     "@googlemaps/typescript-guards": "^2.0.0",
-    "@prisma/client": "^3.15.2",
+    "@prisma/client": "^4.2.1",
     "googleapis": "^39.2.0",
     "next": "12.1.6",
-    "prisma": "^3.15.2",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
@@ -32,6 +35,7 @@
     "@types/react-dom": "18.0.5",
     "eslint": "8.18.0",
     "eslint-config-next": "12.1.6",
+    "prisma": "^4.2.1",
     "ts-node": "^10.8.1",
     "typescript": "4.7.4"
   }

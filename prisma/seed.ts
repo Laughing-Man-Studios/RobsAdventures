@@ -5,35 +5,16 @@
 | location data and messages under them  |
 \* -------------------------------------*/
 
-const { PrismaClient } = require('@prisma/client');
-const trips = [
-  { 
-    name: 'RITO_ALTO_FOUR_PASS_LOOP',
-    zoom: 3,
-    lng: 0,
-    lat: 0
-  },
-  { 
-    name: 'JOHN_MUIR_TRAIL',
-    zoom: 8,
-    lng: -118.86505,
-    lat: 37.090345
-  },
-  { 
-    name: 'WOODLAND_LAKE',
-    zoom: 14,
-    lng: -105.63268,
-    lat: 39.96284
-  }
-]
+import { PrismaClient } from "@prisma/client";
+import { TRIP_META_DATA } from "../common/literals";
 const prisma = new PrismaClient();
 
 
 
 async function main() {
-  for (const { name, zoom, lng, lat } of trips) {
+  for (const { name, zoom, lng, lat } of TRIP_META_DATA) {
     console.log(`Adding ${name} to TRIP table`);
-    await prisma.Trip.upsert({
+    await prisma.trip.upsert({
         where: {
           name
         },
@@ -54,8 +35,10 @@ async function main() {
 }
   
 main()
-  .catch((e) => {
+  .catch(async (e) => {
+    await prisma.$disconnect();
     throw e
+    process.exit(1);
   })
   .finally(async () => {
     await prisma.$disconnect();
