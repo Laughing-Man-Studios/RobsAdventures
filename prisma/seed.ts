@@ -12,6 +12,8 @@ const prisma = new PrismaClient();
 
 
 async function main() {
+  await prisma.location.deleteMany({});
+  await prisma.messages.deleteMany({});
   for (const { name, zoom, lng, lat } of TRIP_META_DATA) {
     console.log(`Adding ${name} to TRIP table`);
     await prisma.trip.upsert({

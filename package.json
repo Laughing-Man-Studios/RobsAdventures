@@ -17,7 +17,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "clean-db": "npx prisma migrate reset"
+    "clean-db": "npx prisma migrate reset",
+    "get-mail": "bash scripts/kick_off_get_mail.sh",
+    "release": "bash scripts/release.sh"
   },
   "dependencies": {
     "@googlemaps/react-wrapper": "^1.1.35",
