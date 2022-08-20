@@ -1,8 +1,8 @@
-import type { NextPage } from 'next'
-import { AppProps } from '../../common/types'
-import { getLocations, getMessages, getTrips } from '../../common/functions'
-import Main from '../../components/main'
-import { DEFAULT_TRIP } from '../../common/literals'
+import type { NextPage } from 'next';
+import { AppProps } from '../../common/types';
+import { getLocations, getMessages, getTrips } from '../../common/functions';
+import Main from '../../components/main';
+import { DEFAULT_TRIP } from '../../common/literals';
 
 
 const Trips: NextPage<AppProps> = ({ tokenURL, apiKey, locations, messages, trips, page }) => {
@@ -13,8 +13,8 @@ const Trips: NextPage<AppProps> = ({ tokenURL, apiKey, locations, messages, trip
     locations={locations}
     messages={messages}
     trips={trips}
-  />)
-}
+  />);
+};
 
 
 export async function getServerSideProps(context: any) {

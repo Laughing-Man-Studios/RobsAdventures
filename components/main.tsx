@@ -1,4 +1,4 @@
-import { AppProps } from "../common/types";
+import { AppProps } from '../common/types';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -6,9 +6,9 @@ import styles from '../styles/Home.module.css';
 import GoogleMap from '../components/map/container';
 import TimeTable from '../components/table';
 import Blog from '../components/blog';
-import MobileNav from "./nav/mobile";
-import WebNav from "./nav/web";
-import { Trip } from "@prisma/client";
+import MobileNav from './nav/mobile';
+import WebNav from './nav/web';
+import { Trip } from '@prisma/client';
 
 const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips, page }) => {
     const mapCoords = trips.find(trip => trip.name === page.toUpperCase()) || {} as Trip;
@@ -58,6 +58,12 @@ const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips
             <p>{tokenURL}</p>
           </main>
     
+          <div className={styles.adminLinkContainer}>
+            <Link href='/admin/login'>
+              <a className={styles.adminLink}>Admin Login</a>
+            </Link>
+          </div>
+
           <footer className={styles.footer}>
             <a
               href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"

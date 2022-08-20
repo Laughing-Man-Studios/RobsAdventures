@@ -121,6 +121,12 @@
   flex-direction: row;
   align-items: flex-start;
 }
+.adminLinkContainer {
+  text-align: center;
+}
+.adminLink {
+  color: -webkit-link;
+}
 
 @media (max-width: 1024px) {
   .description {

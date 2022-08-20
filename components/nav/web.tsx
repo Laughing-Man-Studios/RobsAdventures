@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { NavProps } from "../../common/types";
-import styles from "../../styles/Nav.module.css";
+import Link from 'next/link';
+import { NavProps } from '../../common/types';
+import styles from '../../styles/Nav.module.css';
 
 const WebNav: React.FC<NavProps> = ({ trips, page }) => {
     return (
