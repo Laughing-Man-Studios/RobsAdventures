@@ -1,0 +1,16 @@
+.loginForm {
+    margin: 5rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.loginTitle {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.loginSpacing {
+    margin-right: 1rem;
+}
