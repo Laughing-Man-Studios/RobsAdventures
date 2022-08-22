@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { PrismaClient } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getOauth2Client } from '../../common/functions';
+import { getOauth2Client } from '../../common/serverFunctions';
 import { GMAIL_TOKEN_FLAG, GMAIL_TOKEN_VAR } from '../../common/literals';
 import { Credentials } from 'google-auth-library';
 const prisma = new PrismaClient(); 

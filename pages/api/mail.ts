@@ -1,9 +1,19 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { Labels, LabelsList, GMAIL_TOKEN_FLAG, GMAIL_TOKEN_VAR, DEFAULT_TRIP } from '../../common/literals';
-import { getOauth2Client, toTitleCase, getTrips, labelToDatabaseName, addTrips } from '../../common/functions';
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { 
+  Labels, 
+  LabelsList, 
+  GMAIL_TOKEN_FLAG, 
+  GMAIL_TOKEN_VAR, 
+  DEFAULT_TRIP 
+} from '../../common/literals';
+import { 
+  getOauth2Client, 
+  labelToDatabaseName, 
+  addTrips 
+} from '../../common/serverFunctions';
 import { OAuth2Client } from 'google-auth-library';
-import { gmail_v1, google, manufacturers_v1 } from 'googleapis';
+import { gmail_v1, google } from 'googleapis';
 import { TokenError } from '../../common/errors';
 import { Authentication, PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
@@ -13,7 +23,9 @@ interface LocationData {
   latitude: string
 }
 
-function getTripLabel(tripLabelMap: Map<string,string>, labelIds: string[] | undefined): string {
+function getTripLabel(
+  tripLabelMap: Map<string,string>, labelIds: string[] | undefined
+  ): string {
   if (labelIds) {
     return tripLabelMap.get(
       Array.from(tripLabelMap.keys())
@@ -52,7 +64,9 @@ async function getToken(oAuth2Client: OAuth2Client) {
     }
     oAuth2Client.setCredentials(token);
   } else {
-    throw new TokenError('GMAIL_TOKEN is not set. Need to authenticate with Google.');
+    throw new TokenError(
+      'GMAIL_TOKEN is not set. Need to authenticate with Google.'
+    );
   }
 }
 

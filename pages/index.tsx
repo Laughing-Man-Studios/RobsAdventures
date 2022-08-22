@@ -1,11 +1,13 @@
 import type { NextPage } from 'next';
 import { AppProps } from '../common/types';
-import { getLocations, getMessages, getTrips } from '../common/functions';
+import { getLocations, getMessages, getTrips } from '../common/serverFunctions';
 import Main from '../components/main';
 import { DEFAULT_TRIP } from '../common/literals';
 
 
-const Home: NextPage<AppProps> = ({ tokenURL, apiKey, locations, messages, trips, page }) => {
+const Home: NextPage<AppProps> = ({ 
+  tokenURL, apiKey, locations, messages, trips, page 
+}: AppProps) => {
   return (<Main
     page={page}
     tokenURL={tokenURL}
