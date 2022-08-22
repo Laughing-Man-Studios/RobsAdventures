@@ -6,7 +6,6 @@ async function handler(
     req: NextApiRequest,
     res: NextApiResponse<String>
   ) {
-    console.log(req.method);
     if (req.method === 'POST') {
       if (req.body.password === process.env.ADMIN_PASSWORD) {
         req.session.loggedIn = true;
@@ -15,7 +14,6 @@ async function handler(
       }
       return res.status(403).send('You have entered in the wrong password.');
     } else if (req.method === 'DELETE') {
-      console.log('IN LOGOUT CODE');
       req.session && req.session.destroy();
       res.redirect('/admin/login');
     }

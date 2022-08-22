@@ -1,25 +1,45 @@
-import React, { PropsWithChildren } from "react";
-import mapStyles from "../../styles/Map.module.css"
+import React, { PropsWithChildren } from 'react';
+import mapStyles from '../../styles/Map.module.css';
 
 interface Map {
   center: google.maps.LatLngLiteral;
   zoom: number;
+  onPan?: (newLat: number, newLng: number) => void;
+  onZoom?: (newZoom: number) => void;
 }
 
 const Map: React.FC<PropsWithChildren<Map>> = ({
     center,
     zoom,
+    onPan,
+    onZoom,
     children
   }) => {
     const ref = React.useRef<HTMLDivElement>(null);
     const [map, setMap] = React.useState<google.maps.Map>();
+    function onCenterChanged(this: google.maps.Map) {
+      const center = this.getCenter();
+      if (onPan && center) {
+        onPan(center.lat(), center.lng());
+      }
+    }
+
+    function onZoomChanged(this: google.maps.Map) {
+      const zoom = this.getZoom();
+      if (onZoom && zoom) {
+        onZoom(zoom);
+      }
+    }
   
     React.useEffect(() => {
       if (ref.current && !map) {
-        setMap(new window.google.maps.Map(ref.current, {
+        const newMap = new window.google.maps.Map(ref.current, {
           zoom,
           center
-        }));
+        });
+        newMap.addListener('center_changed', onCenterChanged);
+        newMap.addListener('zoom_changed', onZoomChanged)
+        setMap(newMap);
       }
     }, [ref, map, zoom, center]);
   
@@ -31,6 +51,6 @@ const Map: React.FC<PropsWithChildren<Map>> = ({
       }
     })}
     </div>);
-  }
+  };
 
   export default Map;

@@ -1,9 +1,9 @@
-import * as React from "react";
-import { Wrapper, Status } from "@googlemaps/react-wrapper";
-import Map from "./map";
-import {  Trip } from '@prisma/client'
-import Marker from "./marker";
-import { ModifiedLocation } from "../../common/types";
+import * as React from 'react';
+import { Wrapper, Status } from '@googlemaps/react-wrapper';
+import Map from './map';
+import {  Trip } from '@prisma/client';
+import Marker from './marker';
+import { ModifiedLocation } from '../../common/types';
 
 const render = (status: Status): JSX.Element => {
   if (status === Status.LOADING) return <h3>{status} ..</h3>;
