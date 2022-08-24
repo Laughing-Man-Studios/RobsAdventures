@@ -32,9 +32,8 @@
     padding: 0;
 }
 
-.mainLogout {
-    margin: auto;
-    display: block;
+.mainLogout:hover {
+    cursor:pointer;
 }
 
 .mainContentWrapper {
@@ -47,6 +46,10 @@
 
 .mainTitle {
     text-align: center;
+}
+
+.mainLinkItem {
+    margin-bottom: 1rem;
 }
 
 .mapForm {

@@ -22,13 +22,14 @@ const AdminMain:
         <div className={styles.mainContainer}>
             <nav className={styles.mainNav}>
                 <ul className={styles.mainList}>
-                    <li><Link href='/admin/map'><a>Map</a></Link></li>
-                    <li><Link href='/admin/pictures'><a>Pictures</a></Link></li>
+                    <li className={styles.mainLinkItem}><Link href='/'><a>Home</a></Link></li>
+                    <li className={styles.mainLinkItem}><Link href='/admin/map'><a>Map</a></Link></li>
+                    <li className={styles.mainLinkItem}><Link href='/admin/pictures'><a>Pictures</a></Link></li>
+                    <li className={styles.mainLogout} onClick={logout}>Logout</li>
                 </ul>
             </nav>
             <div className={styles.mainContentWrapper}>
                 <h1 className={styles.mainTitle}>{title}</h1>
-                <button className={styles.mainLogout} onClick={logout}>Logout</button>
                 <div className={styles.mainContent}>{children}</div>
             </div>
         </div>
