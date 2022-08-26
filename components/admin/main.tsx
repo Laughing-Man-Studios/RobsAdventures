@@ -24,6 +24,7 @@ const AdminMain:
                 <ul className={styles.mainList}>
                     <li className={styles.mainLinkItem}><Link href='/'><a>Home</a></Link></li>
                     <li className={styles.mainLinkItem}><Link href='/admin/map'><a>Map</a></Link></li>
+                    <li className={styles.mainLinkItem}><Link href='/admin/trips'><a>Trips</a></Link></li>
                     <li className={styles.mainLinkItem}><Link href='/admin/pictures'><a>Pictures</a></Link></li>
                     <li className={styles.mainLogout} onClick={logout}>Logout</li>
                 </ul>

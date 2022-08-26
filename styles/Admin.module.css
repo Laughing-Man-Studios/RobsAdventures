@@ -61,3 +61,24 @@
 .mapPadding {
     margin-bottom: 2rem;
 }
+
+.tripContainer {
+    padding: 1rem;
+}
+
+.tripFormContainer {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.tripItems {
+    margin-right: 1rem;
+}
+
+.tripActionMessage {
+    color: green;
+    text-align: center;
+    display: block;
+}
+
