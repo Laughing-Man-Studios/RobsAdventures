@@ -14,8 +14,10 @@ import {
 } from "../../common/serverFunctions";
 import { OAuth2Client } from "google-auth-library";
 import { gmail_v1, google } from "googleapis";
+import { GaxiosError } from "gaxios";
 import { TokenError } from "../../common/errors";
 import { Authentication, PrismaClient } from "@prisma/client";
+
 const prisma = new PrismaClient();
 
 interface LocationData {
@@ -112,9 +114,20 @@ async function getAndSaveMail(auth: OAuth2Client) {
 
 async function getLabels(gmail: gmail_v1.Gmail): Promise<Map<string, string>> {
   const labelMap = new Map();
-  const { data } = await gmail.users.labels.list({ userId: "me" });
+  let data = null;
+  try {
+    data = (await gmail.users.labels.list({ userId: "me" })).data;
+  } catch (err) {
+    if (
+      err instanceof GaxiosError &&
+      err.response?.status === 400 &&
+      err.response.data.error === "invalid_grant"
+    ) {
+      throw new TokenError(err.toString());
+    }
+  }
 
-  if (!data.labels) {
+  if (!data || !data.labels) {
     throw new Error(
       "No Labels in Gmail account! Gmail (or Google API) is screwed up!"
     );
