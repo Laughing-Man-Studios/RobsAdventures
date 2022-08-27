@@ -1,4 +1,3 @@
-import { Trip } from '@prisma/client';
 import Link from 'next/link';
 import { useState } from 'react';
 import { NavProps } from '../../common/types';
