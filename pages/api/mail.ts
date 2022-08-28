@@ -1,22 +1,19 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import {
-  Labels,
-  LabelsList,
-  GMAIL_TOKEN_FLAG,
-  GMAIL_TOKEN_VAR,
-  DEFAULT_TRIP,
-} from "../../common/literals";
+import { Labels, LabelsList, DEFAULT_TRIP } from "../../common/literals";
 import {
   getOauth2Client,
   labelToDatabaseName,
   addTrips,
+  getToken,
+  getLabels,
+  getAuthUrl,
 } from "../../common/serverFunctions";
+import { AuthMessage } from "../../common/types";
 import { OAuth2Client } from "google-auth-library";
 import { gmail_v1, google } from "googleapis";
-import { GaxiosError } from "gaxios";
 import { TokenError } from "../../common/errors";
-import { Authentication, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -44,7 +41,7 @@ function getTripLabel(
 export default async function handler(
   req: NextApiRequest,
   // eslint-disable-next-line @typescript-eslint/ban-types
-  res: NextApiResponse<String>
+  res: NextApiResponse<string | AuthMessage>
 ) {
   const oAuth2Client = getOauth2Client(res);
   try {
@@ -62,43 +59,6 @@ export default async function handler(
   }
 }
 
-async function getToken(oAuth2Client: OAuth2Client) {
-  const tokenEntry = await getTokenFromDB();
-  if (tokenEntry) {
-    const token = JSON.parse(tokenEntry.value.toString());
-    if (!token.refresh_token) {
-      token.refresh_token = tokenEntry.reauth;
-    }
-    oAuth2Client.setCredentials(token);
-  } else {
-    throw new TokenError(
-      "GMAIL_TOKEN is not set. Need to authenticate with Google."
-    );
-  }
-}
-
-async function getTokenFromDB(): Promise<Authentication | null> {
-  const token = await prisma.authentication.findFirst({
-    where: {
-      name: GMAIL_TOKEN_VAR,
-    },
-  });
-  await prisma.$disconnect();
-  return token;
-}
-
-function getAuthUrl(oAuth2Client: OAuth2Client, err: unknown) {
-  const authUrl = oAuth2Client.generateAuthUrl({
-    access_type: "offline",
-    scope: ["https://www.googleapis.com/auth/gmail.readonly"],
-  });
-  process.env[GMAIL_TOKEN_FLAG] = authUrl;
-  console.log(
-    "No Token Available. Need to Authenticate with Google to get Token file. Err: " +
-      err
-  );
-}
-
 async function getAndSaveMail(auth: OAuth2Client) {
   const gmail = google.gmail({ version: "v1", auth });
   console.log("got gmail instance");
@@ -110,34 +70,6 @@ async function getAndSaveMail(auth: OAuth2Client) {
   console.log("saved locations");
   await saveUpdateMessages(labelMap, gmail);
   console.log("saved blog messages");
-}
-
-async function getLabels(gmail: gmail_v1.Gmail): Promise<Map<string, string>> {
-  const labelMap = new Map();
-  let data = null;
-  try {
-    data = (await gmail.users.labels.list({ userId: "me" })).data;
-  } catch (err) {
-    if (
-      err instanceof GaxiosError &&
-      err.response?.status === 400 &&
-      err.response.data.error === "invalid_grant"
-    ) {
-      throw new TokenError(err.toString());
-    }
-  }
-
-  if (!data || !data.labels) {
-    throw new Error(
-      "No Labels in Gmail account! Gmail (or Google API) is screwed up!"
-    );
-  }
-  for (const label of data.labels) {
-    if (label && label.name && label.name.includes("Zoleo/")) {
-      labelMap.set(label.name, label.id);
-    }
-  }
-  return labelMap;
 }
 
 function getLocationData(snippit: string): LocationData {

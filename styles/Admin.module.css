@@ -1,84 +1,88 @@
 .loginForm {
-    margin: 5rem auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: row;
+  margin: 5rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
 }
 
 .loginTitle {
-    text-align: center;
-    margin-top: 2rem;
+  text-align: center;
+  margin-top: 2rem;
 }
 
 .loginSpacing {
-    margin-right: 1rem;
+  margin-right: 1rem;
 }
 
 .mainContainer {
-    display: flex;
-    height: 100vh;
+  display: flex;
+  height: 100vh;
 }
 
 .mainNav {
-    padding: 4rem 1rem;
-    border-right: solid 2px black;
-    height: 100%;
+  padding: 4rem 1rem;
+  border-right: solid 2px black;
+  height: 100%;
 }
 
 .mainList {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .mainLogout:hover {
-    cursor:pointer;
+  cursor: pointer;
 }
 
 .mainContentWrapper {
-    width: 100%
+  width: 100%;
 }
 
 .mainContent {
-    padding: 2rem;
+  padding: 2rem;
 }
 
 .mainTitle {
-    text-align: center;
+  text-align: center;
 }
 
 .mainLinkItem {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .mapForm {
-    display: flex;
-    flex-direction: column;
-    margin: 0 7rem;
+  display: flex;
+  flex-direction: column;
+  margin: 0 7rem;
 }
 
 .mapPadding {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
 .tripContainer {
-    padding: 1rem;
+  padding: 1rem;
 }
 
 .tripFormContainer {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
 }
 
 .tripItems {
-    margin-right: 1rem;
+  margin-right: 1rem;
 }
 
 .tripActionMessage {
-    color: green;
-    text-align: center;
-    display: block;
+  color: green;
+  text-align: center;
+  display: block;
 }
 
+.authUrl {
+  color: -webkit-link;
+  display: block;
+}

@@ -7,7 +7,7 @@ export type ModifiedLocation = {
   longitude: string;
   latitude: string;
   dateTime: string;
-}
+};
 
 export type ModifiedMessage = {
   id: number;
@@ -15,18 +15,23 @@ export type ModifiedMessage = {
   tripId: number;
   message: string;
   dateTime: string;
-}
+};
 
 export type AppProps = {
   page: string;
-  tokenURL: String | null;
+  tokenURL: string | null;
   apiKey: string;
   locations: ModifiedLocation[];
   messages: ModifiedMessage[];
   trips: Trip[];
-}
+};
 
 export type NavProps = {
   trips: Trip[];
   page: string;
-}
+};
+
+export type AuthMessage = {
+  message: string;
+  url?: string;
+};
