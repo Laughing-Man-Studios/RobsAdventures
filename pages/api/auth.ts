@@ -4,12 +4,13 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getOauth2Client } from "../../common/serverFunctions";
 import { GMAIL_TOKEN_FLAG, GMAIL_TOKEN_VAR } from "../../common/literals";
 import { Credentials } from "google-auth-library";
+import { AuthMessage } from "../../common/types";
 const prisma = new PrismaClient();
 
 export default async function handler(
   req: NextApiRequest,
   // eslint-disable-next-line @typescript-eslint/ban-types
-  res: NextApiResponse<String>
+  res: NextApiResponse<string | AuthMessage>
 ) {
   const { code } = req.query;
   const codeStr = Array.isArray(code) ? code[0] : code;
