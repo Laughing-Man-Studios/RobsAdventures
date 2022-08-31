@@ -28,7 +28,6 @@ kill_timeout = 5
   internal_port = 8080
   processes = ["app"]
   protocol = "tcp"
-  script_checks = []
   [services.concurrency]
     hard_limit = 25
     soft_limit = 20
@@ -48,6 +47,7 @@ kill_timeout = 5
     interval = "15s"
     restart_limit = 0
     timeout = "2s"
+
   [[services.script_checks]]
     interval = 600000
     timeout = 1000
