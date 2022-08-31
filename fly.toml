@@ -4,6 +4,10 @@ app = "robs-adventures"
 kill_signal = "SIGINT"
 kill_timeout = 5
 
+[build]
+  builder = "paketobuildpacks/builder:base"
+  buildpacks = ["gcr.io/paketo-buildpacks/nodejs"]
+
 [deploy]
   release_command = "bash ./scripts/release.sh"
 
