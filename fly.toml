@@ -48,3 +48,8 @@ kill_timeout = 5
     interval = "15s"
     restart_limit = 0
     timeout = "2s"
+  [[services.script_checks]]
+    interval = 600000
+    timeout = 1000
+    command = "/app/scripts/kick_off_get_mail.sh"
+    restart_limit = 0
