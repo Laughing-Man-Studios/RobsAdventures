@@ -55,7 +55,7 @@ export default async function handler(
       console.log("Not token error");
       console.log(err);
     }
-    res.status(500).send(err as string);
+    res.status(200).send(err as string);
   }
 }
 
