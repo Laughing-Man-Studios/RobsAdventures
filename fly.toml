@@ -48,7 +48,7 @@ kill_timeout = 5
     method = "get"
     path = "/api/mail"
     protocol = "http"
-    timeout = 120s
+    timeout = "120s"
     restart_limit = 0
-    grace_period = 5s
+    grace_period = "5s"
 
