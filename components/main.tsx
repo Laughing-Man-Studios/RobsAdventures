@@ -15,6 +15,9 @@ const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips
 
     return (
         <div className={styles.container}>
+          {
+            tokenURL && (<p className={styles.authenticate}>Please Authenticate Application Via The Admin Portal</p>)
+          }
           <Head>
             <title>Robs Adventures</title>
             <meta name="description" content="A website that tracks Rob on his hiking adventures" />
@@ -53,9 +56,6 @@ const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips
               </p>
               <Blog messages={messages} />
             </div>
-    
-            
-            <p>{tokenURL}</p>
           </main>
     
           <div className={styles.adminLinkContainer}>

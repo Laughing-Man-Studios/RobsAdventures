@@ -127,6 +127,13 @@
 .adminLink {
   color: -webkit-link;
 }
+.authenticate {
+  display: block;
+  padding: 1rem;
+  background-color: red;
+  text-align: center;
+  font-weight: 500;
+}
 
 @media (max-width: 1024px) {
   .description {

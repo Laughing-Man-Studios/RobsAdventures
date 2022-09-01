@@ -37,3 +37,6 @@ yarn-error.log*
 
 # google token
 token.json 
+
+# get mail script (for dev convience only)
+scripts/kick_off_get_mail.sh
