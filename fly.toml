@@ -20,7 +20,6 @@ kill_timeout = 5
   app = "npm start"
 
 [[services]]
-  http_checks = []
   internal_port = 8080
   processes = ["app"]
   protocol = "tcp"
@@ -44,9 +43,10 @@ kill_timeout = 5
     restart_limit = 0
     timeout = "2s"
 
-  [[services.script_checks]]
-  command       = "/app/scripts/kick_off_get_mail.sh"
-  grace_period  = "5s"
-  interval      = "600s"
-  restart_limit = 0
-  timeout       = "120s"
+  [[services.http_checks]]
+    interval = 600s
+    method = "get"
+    path = "/api/mail"
+    protocol = "http"
+    timeout = 120s
+    restart_limit = 0
