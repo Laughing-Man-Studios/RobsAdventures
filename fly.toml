@@ -46,7 +46,7 @@ kill_timeout = 5
 
   [[services.script_checks]]
   command       = "/app/scripts/kick_off_get_mail.sh"
-  grace_period  = "10s"
+  grace_period  = "5s"
   interval      = "600s"
   restart_limit = 0
   timeout       = "120s"

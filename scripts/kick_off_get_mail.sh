@@ -2,4 +2,4 @@
 
 URL="${MAIL_URL:-http://localhost:3000/api/mail}"
 
-wget -qO- $URL
+curl --write-out "%{http_code}\n" $URL
