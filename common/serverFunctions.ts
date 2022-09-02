@@ -6,6 +6,8 @@ import { PrismaClient, Trip, Authentication } from "@prisma/client";
 import { GMAIL_TOKEN_FLAG, GMAIL_TOKEN_VAR } from "./literals";
 import { TokenError } from "./errors";
 import { GaxiosError } from "gaxios";
+import { FunctionalError } from "./errors";
+import { APIError } from "./errors";
 export { toTitleCase, labelToDatabaseName } from "./functions";
 const prisma = new PrismaClient();
 
@@ -19,7 +21,7 @@ export function getOauth2Client(
     return new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
   }
   res.status(500).send("Failed. No OAuth2Client");
-  throw new Error(`Unable to create OAuth2Client. 
+  throw new FunctionalError(`Unable to create OAuth2Client. 
     Check that Google Credentials have have been 
     added to the enviornment variable GOOGLE_CREDIENTIALS`);
 }
@@ -34,19 +36,23 @@ export async function getToken(oAuth2Client: OAuth2Client) {
     oAuth2Client.setCredentials(token);
   } else {
     throw new TokenError(
-      "GMAIL_TOKEN is not set. Need to authenticate with Google."
+      'Failed to get token. GMAIL_TOKEN is not set. Need to authenticate with Google.'
     );
   }
 }
 
 async function getTokenFromDB(): Promise<Authentication | null> {
-  const token = await prisma.authentication.findFirst({
-    where: {
-      name: GMAIL_TOKEN_VAR,
-    },
-  });
-  await prisma.$disconnect();
-  return token;
+  try {
+    const token = await prisma.authentication.findFirst({
+      where: {
+        name: GMAIL_TOKEN_VAR,
+      },
+    });
+    await prisma.$disconnect();
+    return token;
+  } catch (err) {
+    throw new APIError(`Failed to get Token From Database -> ${err}`);
+  }
 }
 
 export async function getLabels(
@@ -63,11 +69,13 @@ export async function getLabels(
       err.response.data.error === "invalid_grant"
     ) {
       throw new TokenError(err.toString());
+    } else {
+      throw new APIError(`Unable to get labels from from gmail -> ${err}`);
     }
   }
 
   if (!data || !data.labels) {
-    throw new Error(
+    throw new FunctionalError(
       "No Labels in Gmail account! Gmail (or Google API) is screwed up!"
     );
   }
@@ -93,75 +101,93 @@ export function getAuthUrl(oAuth2Client: OAuth2Client, err: unknown): string {
 }
 
 export async function getLocations(trip: string): Promise<ModifiedLocation[]> {
-  const locationData = await prisma.location.findMany({
-    where: {
-      trip: {
-        name: trip.toUpperCase(),
+  try {
+    const locationData = await prisma.location.findMany({
+      where: {
+        trip: {
+          name: trip.toUpperCase(),
+        },
       },
-    },
-  });
-  await prisma.$disconnect();
+    });
+    await prisma.$disconnect();
+  
+    locationData.sort((a, b) => b.dateTime.getTime() - a.dateTime.getTime());
+  
+    return locationData.map(
+      ({ id, gmailId, tripId, longitude, latitude, dateTime }) => {
+        return {
+          id,
+          gmailId,
+          tripId,
+          longitude,
+          latitude,
+          dateTime: dateTime.toString(),
+        };
+      }
+    );
+  } catch (err) {
+    throw new APIError(`Unable to get Locations for ${trip} -> ${err}`);
+  }
+}
 
-  locationData.sort((a, b) => b.dateTime.getTime() - a.dateTime.getTime());
-
-  return locationData.map(
-    ({ id, gmailId, tripId, longitude, latitude, dateTime }) => {
+export async function getMessages(trip: string): Promise<ModifiedMessage[]> {
+  try {
+    const messageData = await prisma.messages.findMany({
+      where: {
+        trip: {
+          name: trip.toUpperCase(),
+        },
+      },
+    });
+  
+    await prisma.$disconnect();
+  
+    messageData.sort((a, b) => b.dateTime.getTime() - a.dateTime.getTime());
+  
+    return messageData.map(({ id, gmailId, tripId, message, dateTime }) => {
       return {
         id,
         gmailId,
         tripId,
-        longitude,
-        latitude,
+        message,
         dateTime: dateTime.toString(),
       };
-    }
-  );
-}
+    });
+  } catch (err) {
+    throw new APIError(`Unable to get Messages for ${trip} -> ${err}`);
+  }
 
-export async function getMessages(trip: string): Promise<ModifiedMessage[]> {
-  const messageData = await prisma.messages.findMany({
-    where: {
-      trip: {
-        name: trip.toUpperCase(),
-      },
-    },
-  });
-
-  await prisma.$disconnect();
-
-  messageData.sort((a, b) => b.dateTime.getTime() - a.dateTime.getTime());
-
-  return messageData.map(({ id, gmailId, tripId, message, dateTime }) => {
-    return {
-      id,
-      gmailId,
-      tripId,
-      message,
-      dateTime: dateTime.toString(),
-    };
-  });
 }
 
 export async function getTrips(): Promise<Trip[]> {
-  const trips = await prisma.trip.findMany();
-  await prisma.$disconnect();
+  try {
+    const trips = await prisma.trip.findMany();
+    await prisma.$disconnect();
+  
+    return trips;
+  } catch (err) {
+    throw new APIError(`Unable to get Trips -> ${err}`);
+  }
 
-  return trips;
 }
 
 export async function addTrips(names: string[]): Promise<void> {
-  const tripNames = (await getTrips()).map((trip) => trip.name);
-  for (const name of names) {
-    if (!tripNames.includes(name)) {
-      console.log("Creating trip entry for " + name);
-      await prisma.trip.create({
-        data: {
-          name: name,
-          zoom: 3,
-          lng: 0,
-          lat: 0,
-        },
-      });
+  try {
+    const tripNames = (await getTrips()).map((trip) => trip.name);
+    for (const name of names) {
+      if (!tripNames.includes(name)) {
+        console.log("Creating trip entry for " + name);
+        await prisma.trip.create({
+          data: {
+            name: name,
+            zoom: 3,
+            lng: 0,
+            lat: 0,
+          },
+        });
+      }
     }
+  } catch (err) {
+    throw new APIError(`Unable to add Trip: ${trip} -> ${err}`);
   }
 }
