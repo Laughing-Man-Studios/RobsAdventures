@@ -172,7 +172,7 @@ export async function getTrips(): Promise<Trip[]> {
 }
 
 export async function addTrips(names: string[]): Promise<void> {
-  let tripNames = []];
+  let tripNames = [];
   try {
     tripNames = (await getTrips()).map((trip) => trip.name);
   } catch (err) {
