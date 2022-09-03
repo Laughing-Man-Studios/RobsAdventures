@@ -2,9 +2,13 @@ name: Stage
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: 
+     - stage
+     - main
   push:
-    branches: [ main ]
+    branches:
+      - stage
+      - main
 
 jobs:
   build:
