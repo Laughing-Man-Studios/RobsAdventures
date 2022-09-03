@@ -2,7 +2,7 @@ name: Stage
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ stage ]
 
 jobs:
   build:
@@ -18,6 +18,4 @@ jobs:
       - name: Install Node Dependencies
         uses: npm ci
       - name: Run Build
-        uses: icrawl/action-tsc@v1
-        with: 
-          build: ./
+        uses: npm run build
