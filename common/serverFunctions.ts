@@ -172,8 +172,9 @@ export async function getTrips(): Promise<Trip[]> {
 }
 
 export async function addTrips(names: string[]): Promise<void> {
+  let tripNames = []];
   try {
-    const tripNames = (await getTrips()).map((trip) => trip.name);
+    tripNames = (await getTrips()).map((trip) => trip.name);
   } catch (err) {
     throw new APIError(`Unable to get trips for addTrips -> ${err}`);
   }
