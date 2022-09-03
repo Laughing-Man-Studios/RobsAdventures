@@ -1,15 +1,7 @@
 name: Stage
 
-on:
-  pull_request:
-    branches: 
-     - stage
-     - main
-  push:
-    branches:
-      - stage
-      - main
-
+on: [push]
+ 
 jobs:
   build:
     name: Build App
