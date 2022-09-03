@@ -192,7 +192,7 @@ export async function addTrips(names: string[]): Promise<void> {
         });
       }
     } catch (err) {
-      throw new APIError(`Unable to add trip: ${trip} -> ${err}`);
+      throw new APIError(`Unable to add trip: ${name} -> ${err}`);
     }
   }
 }
