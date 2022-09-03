@@ -172,9 +172,14 @@ export async function getTrips(): Promise<Trip[]> {
 }
 
 export async function addTrips(names: string[]): Promise<void> {
+  let tripNames = [];
   try {
-    const tripNames = (await getTrips()).map((trip) => trip.name);
-    for (const name of names) {
+    tripNames = (await getTrips()).map((trip) => trip.name);
+  } catch (err) {
+    throw new APIError(`Unable to get trips for addTrips -> ${err}`);
+  }
+  for (const name of names) {
+    try {
       if (!tripNames.includes(name)) {
         console.log("Creating trip entry for " + name);
         await prisma.trip.create({
@@ -186,8 +191,8 @@ export async function addTrips(names: string[]): Promise<void> {
           },
         });
       }
+    } catch (err) {
+      throw new APIError(`Unable to add trip: ${name} -> ${err}`);
     }
-  } catch (err) {
-    throw new APIError(`Unable to add Trip: ${trip} -> ${err}`);
   }
 }
