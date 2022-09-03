@@ -15,5 +15,3 @@ jobs:
           node-version: '16.17.0'
       - name: Install Node Dependencies
         uses: npm ci
-      - name: Run Build
-        uses: npm run build
