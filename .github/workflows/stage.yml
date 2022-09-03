@@ -1,0 +1,23 @@
+name: Stage
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with: 
+          node-version: '16.17.0'
+      - name: Install Node Dependencies
+        uses: npm ci
+      - name: Run Build
+        uses: icrawl/action-tsc@v1
+        with: 
+          build: ./
