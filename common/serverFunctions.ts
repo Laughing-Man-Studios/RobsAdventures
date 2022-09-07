@@ -64,7 +64,7 @@ export async function getLabels(
     data = (await gmail.users.labels.list({ userId: "me" })).data;
   } catch (err) {
     if (err instanceof GaxiosError) {
-      const { data } = err.response;
+      const data = err.response?.data;
       if (data.error === 'invalid_grant' || data.error === 'invalid_request') {
         throw new TokenError(`Bad Token -> Err: ${data.error} | Desc: ${data.error_description}`);
       }
