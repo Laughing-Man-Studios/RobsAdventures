@@ -27,7 +27,7 @@ export function getOauth2Client(
 
 export async function getToken(oAuth2Client: OAuth2Client) {
   const tokenEntry = await getTokenFromDB();
-  console.log('Stored Token :' + tokenEntry);
+  console.log('Stored Token :' + JSON.stringify(tokenEntry));
   if (tokenEntry) {
     const token = JSON.parse(tokenEntry.value.toString());
     if (!token.refresh_token) {
@@ -94,7 +94,7 @@ export function getAuthUrl(oAuth2Client: OAuth2Client, err: unknown): string {
   });
   process.env[GMAIL_TOKEN_FLAG] = authUrl;
   console.log(
-    "No Token Available. Need to Authenticate with Google to get Token file. Err: " +
+    "Either bad or expired token, or there is no token stored. Need to re-authenticate. Err: \n" +
       err
   );
   return authUrl;
