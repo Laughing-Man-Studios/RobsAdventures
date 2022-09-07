@@ -171,6 +171,17 @@ export async function getTrips(): Promise<Trip[]> {
 
 }
 
+export async function getAuthData(): Promise<Authentication[]> {
+  try {
+    const authData = await prisma.authentication.findMany();
+    await prisma.$disconnect();
+
+    return authData;
+  } catch (err) {
+    throw new APIError(`Unable to get Auth Data -> ${err}`);
+  }
+}
+
 export async function addTrips(names: string[]): Promise<void> {
   let tripNames = [];
   try {

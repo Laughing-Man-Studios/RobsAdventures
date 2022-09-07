@@ -1,15 +1,18 @@
+import { Authentication } from "@prisma/client";
 import { withIronSessionSsr } from "iron-session/next";
 import { NextPage } from "next";
 import { useState } from "react";
+import { getAuthData } from "../../common/serverFunctions";
 import sessionOptions from "../../common/session";
 import AdminMain from "../../components/admin/main";
 import styles from "../../styles/Admin.module.css";
 
 interface AdminAuthProps {
   authUrl: string;
+  authData: Authentication[]
 }
 
-const AdminAuth: NextPage<AdminAuthProps> = ({ authUrl }) => {
+const AdminAuth: NextPage<AdminAuthProps> = ({ authUrl, authData }) => {
   const [status, setStatus] = useState("");
   async function checkAuth() {
     const res = await fetch("/api/admin/auth", {
@@ -41,6 +44,14 @@ const AdminAuth: NextPage<AdminAuthProps> = ({ authUrl }) => {
       ) : null}
       <button onClick={checkAuth}>Check Authentication</button>
       {status ? <p>{status}</p> : null}
+      <div className={styles.authDataContainer}>
+        <h3>Authentication Data</h3>
+        { authData.map( data => {
+          return (
+            <p>Name: {data.name} Reauth: {data.reauth} Value: {data.value}</p>
+          );
+        })}
+      </div>
     </AdminMain>
   );
 };
@@ -56,6 +67,7 @@ export const getServerSideProps = withIronSessionSsr(async function ({
   return {
     props: {
       authUrl: process.env.AUTH_ROUTE || null,
+      authData: getAuthData()
     },
   };
 },
