@@ -41,10 +41,18 @@ model Trip {
   zoom      Int       @default(0)
   location  Location[] @relation("TripLocation")
   messages  Messages[] @relation("TripMessage")
+  pictures  Pictures[] @relation("TripPictures")
 }
 
 model Authentication {
   name      String    @unique
   value     String   
   reauth    String?
+}
+
+model Pictures {
+  url       String    @unique
+  trip      Trip      @relation("TripPictures", fields: [tripId], references: [id])
+  tripId    Int
+
 }

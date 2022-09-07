@@ -56,6 +56,14 @@ const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips
               </p>
               <Blog messages={messages} />
             </div>
+            <div id='picture-section' className={styles.section}>
+              <h2 className={styles.sectionHeader}>Pictures</h2>
+              <p>
+                This is a collection of pictures I have taken while I was on my trip. They are hosted in google photos and you 
+                can see them there by clicking on the link below.
+              </p>
+              <Blog messages={messages} />
+            </div>
           </main>
     
           <div className={styles.adminLinkContainer}>
