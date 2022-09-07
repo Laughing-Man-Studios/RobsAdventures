@@ -15,11 +15,6 @@ interface AdminAuthProps {
 const AdminAuth: NextPage<AdminAuthProps> = ({ authUrl, authData }) => {
   const [status, setStatus] = useState("");
 
-  if (!Array.isArray(authData)) {
-    console.log('AuthData: ' + authData);
-    authData = [];
-  }
-
   async function checkAuth() {
     const res = await fetch("/api/admin/auth", {
       method: "get",
@@ -78,7 +73,7 @@ export const getServerSideProps = withIronSessionSsr(async function ({
   return {
     props: {
       authUrl: process.env.AUTH_ROUTE || null,
-      authData: getAuthData()
+      authData: await getAuthData()
     },
   };
 },
