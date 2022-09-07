@@ -70,6 +70,7 @@ export async function getLabels(
     ) {
       throw new TokenError(err.toString());
     } else {
+      console.log(err);
       throw new APIError(`Unable to get labels from from gmail -> ${err}`);
     }
   }
