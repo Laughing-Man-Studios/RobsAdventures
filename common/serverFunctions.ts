@@ -6,8 +6,7 @@ import { PrismaClient, Trip, Authentication } from "@prisma/client";
 import { GMAIL_TOKEN_FLAG, GMAIL_TOKEN_VAR } from "./literals";
 import { TokenError } from "./errors";
 import { GaxiosError } from "gaxios";
-import { FunctionalError } from "./errors";
-import { APIError } from "./errors";
+import { APIError, FunctionalError } from "./errors";
 export { toTitleCase, labelToDatabaseName } from "./functions";
 const prisma = new PrismaClient();
 
@@ -28,6 +27,7 @@ export function getOauth2Client(
 
 export async function getToken(oAuth2Client: OAuth2Client) {
   const tokenEntry = await getTokenFromDB();
+  console.log('Stored Token :' + tokenEntry);
   if (tokenEntry) {
     const token = JSON.parse(tokenEntry.value.toString());
     if (!token.refresh_token) {
@@ -63,16 +63,15 @@ export async function getLabels(
   try {
     data = (await gmail.users.labels.list({ userId: "me" })).data;
   } catch (err) {
-    if (
-      err instanceof GaxiosError &&
-      err.response?.status === 400 &&
-      err.response.data.error === "invalid_grant"
-    ) {
-      throw new TokenError(err.toString());
-    } else {
-      console.log(err);
-      throw new APIError(`Unable to get labels from from gmail -> ${err}`);
+    if (err instanceof GaxiosError) {
+      const { data } = err.response;
+      if (data.error === 'invalid_grant' || data.error === 'invalid_request') {
+        throw new TokenError(`Bad Token -> Err: ${data.error} | Desc: ${data.error_description}`);
+      }
+      throw new APIError(`Label fetch request failed -> Err: ${data.error} | Desc: ${data.error_description}`);
     }
+    console.log(err);
+    throw new FunctionalError(`Something failed trying to get labels -> ${err}`);
   }
 
   if (!data || !data.labels) {
