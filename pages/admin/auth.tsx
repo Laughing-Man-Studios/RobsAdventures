@@ -14,10 +14,16 @@ interface AdminAuthProps {
 
 const AdminAuth: NextPage<AdminAuthProps> = ({ authUrl, authData }) => {
   const [status, setStatus] = useState("");
+
   async function checkAuth() {
     const res = await fetch("/api/admin/auth", {
       method: "get",
     });
+
+    if (!Array.isArray(authData)) {
+      console.log('AuthData: ' + authData);
+      authData = [];
+    }
 
     const json = await res.json();
     switch (res.status) {
