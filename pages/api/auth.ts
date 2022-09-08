@@ -17,6 +17,7 @@ export default async function handler(
   const codeStr = Array.isArray(code) ? code[0] : code;
   console.log('Query code string: ' + codeStr);
   const oAuth2Client = getOauth2Client(res);
+  console.log('Got oAuth2Client');
   try {
     const token = await oAuth2Client.getToken(codeStr);
     console.log('Token: ' + JSON.stringify(token));
@@ -27,6 +28,7 @@ export default async function handler(
     delete process.env[GMAIL_TOKEN_FLAG];
     res.status(301).redirect("/");
   } catch (err) {
+    console.log(err);
     console.log("Error retrieving and storing access code: " + err);
     res.status(500).send("Failed to Authenticate");
   }
