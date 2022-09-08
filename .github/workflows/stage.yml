@@ -1,6 +1,9 @@
 name: Stage
 
-on: push
+on:
+  push:
+    branches:
+      - stage
  
 jobs:
   build:
