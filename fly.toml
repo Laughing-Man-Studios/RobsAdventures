@@ -44,11 +44,11 @@ kill_timeout = 5
     timeout = "2s"
 
   [[services.http_checks]]
-    interval = "21600s"
+    interval = "999s"
     method = "get"
     path = "/api/mail"
     protocol = "http"
-    timeout = "21600s"
+    timeout = "120s"
     restart_limit = 0
     grace_period = "5s"
 
