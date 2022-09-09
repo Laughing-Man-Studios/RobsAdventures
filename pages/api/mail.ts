@@ -22,6 +22,9 @@ interface LocationData {
   latitude: string;
 }
 
+/* ------------------------------- *\
+          HELPER FUNCTIONS
+\* ------------------------------- */
 function getTripLabel(
   tripLabelMap: Map<string, string>,
   labelIds: string[] | undefined
@@ -59,6 +62,19 @@ function checkIntervalTime(): boolean {
   return false;
 }
 
+function getLocationData(snippit: string): LocationData {
+  const [, latitude, longitude] =
+    snippit.match(/(?<=My location is )(.\d*.\d*), (.\d*.\d*)/) || [];
+
+  return {
+    latitude,
+    longitude,
+  };
+}
+
+/* ------------------------------- *\
+          MAIN REQUEST HANDLER
+\* ------------------------------- */
 export default async function handler(
   req: NextApiRequest,
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -86,6 +102,10 @@ export default async function handler(
   }
 }
 
+/* ------------------------------- *\
+        ACTION AND DB FUNCTIONS
+\* ------------------------------- */
+
 async function getAndSaveMail(auth: OAuth2Client) {
   const gmail = google.gmail({ version: "v1", auth });
   console.log("got gmail instance");
@@ -97,16 +117,6 @@ async function getAndSaveMail(auth: OAuth2Client) {
   console.log("saved locations");
   await saveUpdateMessages(labelMap, gmail);
   console.log("saved blog messages");
-}
-
-function getLocationData(snippit: string): LocationData {
-  const [, latitude, longitude] =
-    snippit.match(/(?<=My location is )(.\d*.\d*), (.\d*.\d*)/) || [];
-
-  return {
-    latitude,
-    longitude,
-  };
 }
 
 async function updateTrips(labelMap: Map<string, string>): Promise<void> {
