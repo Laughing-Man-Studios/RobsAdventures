@@ -14,8 +14,8 @@ const Login: NextPage = () => {
                     type='password'
                     name='password'
                     required
-                    minLength={16}
-                    maxLength={16}
+                    minLength={32}
+                    maxLength={32}
                 />
                 <button type='submit'>Submit</button>
             </form>

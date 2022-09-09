@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Labels, LabelsList, DEFAULT_TRIP } from "../../common/literals";
+import { Labels, LabelsList, DEFAULT_TRIP, GET_MAIL_RUN_DATE, GET_MAIL_INTERVAL } from "../../common/literals";
 import {
   getOauth2Client,
   labelToDatabaseName,
@@ -22,6 +22,9 @@ interface LocationData {
   latitude: string;
 }
 
+/* ------------------------------- *\
+          HELPER FUNCTIONS
+\* ------------------------------- */
 function getTripLabel(
   tripLabelMap: Map<string, string>,
   labelIds: string[] | undefined
@@ -38,11 +41,51 @@ function getTripLabel(
   return DEFAULT_TRIP;
 }
 
+function checkIntervalTime(): boolean {
+  const lastRunDateISO = process.env[GET_MAIL_RUN_DATE];
+  if (!lastRunDateISO) {
+    process.env[GET_MAIL_RUN_DATE] = new Date().toISOString();
+    return true;
+  }
+  const lastRunDateMS = Date.parse(lastRunDateISO);
+  const nowDate = new Date();
+  const nowDateISO = nowDate.toISOString();
+  const timeDifferenceMS = Date.parse(nowDateISO) - lastRunDateMS;
+
+  if (timeDifferenceMS > GET_MAIL_INTERVAL) {
+    process.env[GET_MAIL_RUN_DATE] = nowDateISO;
+    return true;
+  }
+
+  console.log('Skipping get mail. Only been ' + (timeDifferenceMS / 60000)
+    + ' minutes since mail was last retrieved');
+  return false;
+}
+
+function getLocationData(snippit: string): LocationData {
+  const [, latitude, longitude] =
+    snippit.match(/(?<=My location is )(.\d*.\d*), (.\d*.\d*)/) || [];
+
+  return {
+    latitude,
+    longitude,
+  };
+}
+
+/* ------------------------------- *\
+          MAIN REQUEST HANDLER
+\* ------------------------------- */
 export default async function handler(
   req: NextApiRequest,
   // eslint-disable-next-line @typescript-eslint/ban-types
   res: NextApiResponse<string | AuthMessage>
 ) {
+  if (!checkIntervalTime()) {
+    res.status(200)
+      .send('Skipping Get Mail. Its been less than '
+        + '6 hours since last time mail was retrieved');
+    return false;
+  }
   const oAuth2Client = getOauth2Client(res);
   try {
     await getToken(oAuth2Client);
@@ -59,6 +102,10 @@ export default async function handler(
   }
 }
 
+/* ------------------------------- *\
+        ACTION AND DB FUNCTIONS
+\* ------------------------------- */
+
 async function getAndSaveMail(auth: OAuth2Client) {
   const gmail = google.gmail({ version: "v1", auth });
   console.log("got gmail instance");
@@ -70,16 +117,6 @@ async function getAndSaveMail(auth: OAuth2Client) {
   console.log("saved locations");
   await saveUpdateMessages(labelMap, gmail);
   console.log("saved blog messages");
-}
-
-function getLocationData(snippit: string): LocationData {
-  const [, latitude, longitude] =
-    snippit.match(/(?<=My location is )(.\d*.\d*), (.\d*.\d*)/) || [];
-
-  return {
-    latitude,
-    longitude,
-  };
 }
 
 async function updateTrips(labelMap: Map<string, string>): Promise<void> {
