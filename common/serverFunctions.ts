@@ -7,6 +7,7 @@ import { GMAIL_TOKEN_FLAG, GMAIL_TOKEN_VAR } from "./literals";
 import { TokenError } from "./errors";
 import { GaxiosError } from "gaxios";
 import { APIError, FunctionalError } from "./errors";
+import Puppeteer from "puppeteer";
 export { toTitleCase, labelToDatabaseName } from "./functions";
 const prisma = new PrismaClient();
 
@@ -206,4 +207,13 @@ export async function addTrips(names: string[]): Promise<void> {
       throw new APIError(`Unable to add trip: ${name} -> ${err}`);
     }
   }
+}
+
+export async function scapePictures() {
+  const browser = await Puppeteer.launch({});
+  const page = await browser.newPage();
+
+  await page.goto('https://photos.app.goo.gl/CteMKWovtWSsc5UF7');
+  const pageFrame = page.mainFrame();
+  const pictureDivs = await pageFrame.$$('div[data-latest-bg]');
 }
