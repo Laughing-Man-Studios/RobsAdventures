@@ -39,6 +39,7 @@ model Trip {
   lng       Float     @default(0)
   lat       Float     @default(0)
   zoom      Int       @default(0)
+  photosUrl  String?
   location  Location[] @relation("TripLocation")
   messages  Messages[] @relation("TripMessage")
   pictures  Pictures[] @relation("TripPictures")
@@ -54,5 +55,4 @@ model Pictures {
   url       String    @unique
   trip      Trip      @relation("TripPictures", fields: [tripId], references: [id])
   tripId    Int
-
 }
