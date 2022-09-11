@@ -8,12 +8,14 @@ import {
   getToken,
   getLabels,
   getAuthUrl,
+  getTrips,
+  addTripPhotos,
 } from "../../common/serverFunctions";
 import { AuthMessage } from "../../common/types";
 import { OAuth2Client } from "google-auth-library";
 import { gmail_v1, google } from "googleapis";
 import { TokenError } from "../../common/errors";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Trip } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -80,12 +82,12 @@ export default async function handler(
   // eslint-disable-next-line @typescript-eslint/ban-types
   res: NextApiResponse<string | AuthMessage>
 ) {
-  if (!checkIntervalTime()) {
-    res.status(200)
-      .send('Skipping Get Mail. Its been less than '
-        + '6 hours since last time mail was retrieved');
-    return false;
-  }
+  // if (!checkIntervalTime()) {
+  //   res.status(200)
+  //     .send('Skipping Get Mail. Its been less than '
+  //       + '6 hours since last time mail was retrieved');
+  //   return false;
+  // }
   const oAuth2Client = getOauth2Client(res);
   try {
     await getToken(oAuth2Client);
@@ -117,6 +119,8 @@ async function getAndSaveMail(auth: OAuth2Client) {
   console.log("saved locations");
   await saveUpdateMessages(labelMap, gmail);
   console.log("saved blog messages");
+  await savePhotos();
+  console.log('Saved photos');
 }
 
 async function updateTrips(labelMap: Map<string, string>): Promise<void> {
@@ -275,4 +279,16 @@ async function saveUpdateMessages(
       }
     }
   }
+}
+
+async function savePhotos(): Promise<void> {
+  let trips: Trip[] | null = null;
+    trips = await getTrips();
+    for (const trip of trips) {
+      try {
+        await addTripPhotos(trip);
+      } catch (e) {
+        console.log()
+      }
+    }
 }

@@ -2,7 +2,7 @@ import { google, gmail_v1 } from "googleapis";
 import { OAuth2Client } from "google-auth-library";
 import { NextApiResponse } from "next";
 import { AuthMessage, ModifiedLocation, ModifiedMessage } from "./types";
-import { PrismaClient, Trip, Authentication } from "@prisma/client";
+import { PrismaClient, Trip, Authentication, Pictures } from "@prisma/client";
 import { GMAIL_TOKEN_FLAG, GMAIL_TOKEN_VAR } from "./literals";
 import { TokenError } from "./errors";
 import { GaxiosError } from "gaxios";
@@ -28,7 +28,6 @@ export function getOauth2Client(
 
 export async function getToken(oAuth2Client: OAuth2Client) {
   const tokenEntry = await getTokenFromDB();
-  console.log('Stored Token :' + JSON.stringify(tokenEntry));
   if (tokenEntry) {
     const token = JSON.parse(tokenEntry.value.toString());
     if (!token.refresh_token) {
@@ -169,7 +168,17 @@ export async function getTrips(): Promise<Trip[]> {
   } catch (err) {
     throw new APIError(`Unable to get Trips -> ${err}`);
   }
+}
 
+export async function getPictures(): Promise<Pictures[]> {
+  try {
+    const pictures = await prisma.pictures.findMany();
+    await prisma.$disconnect();
+
+    return pictures;
+  } catch (err) {
+    throw new APIError(`Unable to get Pictures -> ${err}`);
+  }
 }
 
 export async function getAuthData(): Promise<Authentication[]> {
@@ -209,11 +218,47 @@ export async function addTrips(names: string[]): Promise<void> {
   }
 }
 
-export async function scapePictures() {
+export async function addTripPhotos(trip: Trip): Promise<void | false> {
+  if (!trip.photosUrl) {
+    return false;
+  }
+  let urls: string[] = [];
+  let pictureUrls = [];
+  try {
+    urls = await scrapePictures(trip.photosUrl);
+  } catch(err) {
+    throw new FunctionalError(`Failed to scrape pictures for ${trip.name}: ${trip.photosUrl} -> ${err}`);
+  }
+  try {
+    pictureUrls = (await getPictures()).map(picture => picture.url);
+  } catch (err) {
+    throw new APIError(`Unable to get pictures for picturesUrls -> ${err}`);
+  }
+
+  for (const url of urls) {
+    try {
+      if (!pictureUrls.includes(url)) {
+        console.log('Creating picture entry: '+url);
+        await prisma.pictures.create({
+          data: {
+            url,
+            trip: {
+              connect: { name: trip.name }
+            }
+          }
+        })
+      }
+    } catch(err) {
+      throw new APIError(`Unable to add picture: ${url}, ${trip} -> ${err}`);
+    }
+  } 
+}
+
+async function scrapePictures(url: string): Promise<string[]> {
   const browser = await Puppeteer.launch({});
   const page = await browser.newPage();
 
-  await page.goto('https://photos.app.goo.gl/CteMKWovtWSsc5UF7');
-  const pageFrame = page.mainFrame();
-  const pictureDivs = await pageFrame.$$('div[data-latest-bg]');
+  await page.goto(url, {waitUntil: 'networkidle0'});
+  return await page.$$eval('div[data-latest-bg]', 
+    elements => elements.map(e => e.getAttribute('data-latest-bg') || ''));
 }
