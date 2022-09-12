@@ -1,4 +1,4 @@
-import { Trip } from "@prisma/client";
+import { Pictures, Trip } from "@prisma/client";
 
 export type ModifiedLocation = {
   id: number;
@@ -24,6 +24,7 @@ export type AppProps = {
   locations: ModifiedLocation[];
   messages: ModifiedMessage[];
   trips: Trip[];
+  pictures: Pictures[]
 };
 
 export type NavProps = {

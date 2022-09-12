@@ -289,6 +289,7 @@ async function savePhotos(): Promise<void> {
         await addTripPhotos(trip);
       } catch (e) {
         console.log()
+        throw e;
       }
     }
 }

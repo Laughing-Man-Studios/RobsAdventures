@@ -170,9 +170,15 @@ export async function getTrips(): Promise<Trip[]> {
   }
 }
 
-export async function getPictures(): Promise<Pictures[]> {
+export async function getPictures(trip: string): Promise<Pictures[]> {
   try {
-    const pictures = await prisma.pictures.findMany();
+    const pictures = await prisma.pictures.findMany({
+      where: {
+        trip: {
+          name: trip.toUpperCase()
+        }
+      }
+    });
     await prisma.$disconnect();
 
     return pictures;
@@ -230,7 +236,7 @@ export async function addTripPhotos(trip: Trip): Promise<void | false> {
     throw new FunctionalError(`Failed to scrape pictures for ${trip.name}: ${trip.photosUrl} -> ${err}`);
   }
   try {
-    pictureUrls = (await getPictures()).map(picture => picture.url);
+    pictureUrls = (await getPictures(trip.name)).map(picture => picture.url);
   } catch (err) {
     throw new APIError(`Unable to get pictures for picturesUrls -> ${err}`);
   }

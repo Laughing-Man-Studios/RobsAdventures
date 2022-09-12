@@ -9,9 +9,10 @@ import Blog from '../components/blog';
 import MobileNav from './nav/mobile';
 import WebNav from './nav/web';
 import { Trip } from '@prisma/client';
+import Pictures from './pictures';
 
-const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips, page }) => {
-    const mapCoords = trips.find(trip => trip.name === page.toUpperCase()) || {} as Trip;
+const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips, page, pictures }) => {
+    const selectedTrip = trips.find(trip => trip.name === page.toUpperCase()) || {} as Trip;
 
     return (
         <div className={styles.container}>
@@ -44,7 +45,7 @@ const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips
                 The table shows the time at which location was triggered by me.
               </p>
               <div className={styles.mapContent}>
-                <GoogleMap apiKey={apiKey} locations={locations} mapCoords={mapCoords} page={page}/>
+                <GoogleMap apiKey={apiKey} locations={locations} mapCoords={selectedTrip} page={page}/>
                 <TimeTable locations={locations} />
               </div>
             </div>
@@ -62,7 +63,7 @@ const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips
                 This is a collection of pictures I have taken while I was on my trip. They are hosted in google photos and you 
                 can see them there by clicking on the link below.
               </p>
-              <Blog messages={messages} />
+              <Pictures pictures={pictures} link={selectedTrip.photosUrl || ''} />
             </div>
           </main>
     
