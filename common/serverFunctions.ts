@@ -242,7 +242,6 @@ export async function addTripPhotos(trip: Trip): Promise<void | false> {
     throw new APIError(`Unable to get pictures for picturesUrls -> ${err}`);
   }
 
-  console.log(urls.length);
   for (const url of urls) {
     try {
       if (!pictureUrls.includes(url)) {
@@ -291,7 +290,6 @@ async function scrapePictures(url: string): Promise<string[]> {
       preLastPic = lastPic();
       scrollDown();
       await wait(delay);
-      console.log(urls);
       urls = urls.concat(scrape());
       postLastPic = lastPic();
     } while (!postLastPic.isSameNode(preLastPic));
