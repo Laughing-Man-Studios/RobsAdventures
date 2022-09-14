@@ -82,12 +82,12 @@ export default async function handler(
   // eslint-disable-next-line @typescript-eslint/ban-types
   res: NextApiResponse<string | AuthMessage>
 ) {
-  // if (!checkIntervalTime()) {
-  //   res.status(200)
-  //     .send('Skipping Get Mail. Its been less than '
-  //       + '6 hours since last time mail was retrieved');
-  //   return false;
-  // }
+  if (!checkIntervalTime()) {
+    res.status(200)
+      .send('Skipping Get Mail. Its been less than '
+        + '6 hours since last time mail was retrieved');
+    return false;
+  }
   const oAuth2Client = getOauth2Client(res);
   try {
     await getToken(oAuth2Client);
@@ -283,13 +283,13 @@ async function saveUpdateMessages(
 
 async function savePhotos(): Promise<void> {
   let trips: Trip[] | null = null;
-    trips = await getTrips();
-    for (const trip of trips) {
-      try {
-        await addTripPhotos(trip);
-      } catch (e) {
-        console.log()
-        throw e;
-      }
+  trips = await getTrips();
+  for (const trip of trips) {
+    try {
+      await addTripPhotos(trip);
+    } catch (e) {
+      console.log()
+      throw e;
     }
+  }
 }
