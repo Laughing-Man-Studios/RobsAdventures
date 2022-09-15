@@ -7,6 +7,9 @@ kill_timeout = 5
 [build]
   builder = "heroku/buildpacks:20"
 
+[deploy]
+  release_command = "npx prisma migrate deploy && npx prisma db seed"
+
 [env]
 
 [experimental]
