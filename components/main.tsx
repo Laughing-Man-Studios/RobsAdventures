@@ -49,22 +49,26 @@ const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips
                 <TimeTable locations={locations} />
               </div>
             </div>
-            <div id='blog-section' className={styles.section}>
-              <h2 className={styles.sectionHeader}>Blog</h2>
-              <p>
-                This is a small blog where I will be posting updates from my trip. I will try to write something out each day.
-                Since my satellite communicator has a limit of a little over a 200 characters, my messages will probably be pretty brief.
-              </p>
-              <Blog messages={messages} />
-            </div>
-            <div id='picture-section' className={styles.section}>
-              <h2 className={styles.sectionHeader}>Pictures</h2>
-              <p>
-                This is a collection of pictures I have taken while I was on my trip. They are hosted in google photos and you 
-                can see them there by clicking on the link below.
-              </p>
-              <Pictures pictures={pictures} link={selectedTrip.photosUrl || ''} />
-            </div>
+            { messages.length > 0 ?
+              (<div id='blog-section' className={styles.section}>
+                <h2 className={styles.sectionHeader}>Blog</h2>
+                <p>
+                  This is a small blog where I will be posting updates from my trip. I will try to write something out each day.
+                  Since my satellite communicator has a limit of a little over a 200 characters, my messages will probably be pretty brief.
+                </p>
+                <Blog messages={messages} />
+              </div>) : null
+            }
+            { pictures.length > 0 ?
+              (<div id='picture-section' className={styles.section}>
+                <h2 className={styles.sectionHeader}>Pictures</h2>
+                <p>
+                  This is a collection of pictures I have taken while I was on my trip. They are hosted in google photos and you 
+                  can see them there by clicking on the link below.
+                </p>
+                <Pictures pictures={pictures} link={selectedTrip.photosUrl || ''} />
+              </div>) : null
+            }
           </main>
     
           <div className={styles.adminLinkContainer}>
