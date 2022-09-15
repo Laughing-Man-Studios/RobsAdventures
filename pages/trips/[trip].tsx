@@ -3,6 +3,7 @@ import { AppProps } from "../../common/types";
 import {
   getLocations,
   getMessages,
+  getPictures,
   getTrips,
 } from "../../common/serverFunctions";
 import Main from "../../components/main";
@@ -15,6 +16,7 @@ const Trips: NextPage<AppProps> = ({
   messages,
   trips,
   page,
+  pictures
 }: AppProps) => {
   return (
     <Main
@@ -23,6 +25,7 @@ const Trips: NextPage<AppProps> = ({
       apiKey={apiKey}
       locations={locations}
       messages={messages}
+      pictures={pictures}
       trips={trips}
     />
   );
@@ -43,6 +46,7 @@ export async function getServerSideProps(context: Context) {
       apiKey: process.env.GOOGLE_MAPS_API_KEY || "",
       locations: await getLocations(trip || DEFAULT_TRIP),
       messages: await getMessages(trip || DEFAULT_TRIP),
+      pictures: await getPictures(trip || DEFAULT_TRIP),
       trips: await getTrips(),
     },
   };

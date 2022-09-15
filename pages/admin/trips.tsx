@@ -88,6 +88,54 @@ const AdminTrips: NextPage<AdminTripsProps> = ({ trips: originalTrips }) => {
           <p className={styles.tripActionMessage}>Delete Successful</p>
         ) : null}
       </div>
+      <form
+          className={styles.tripFormContainer}
+          action="/api/admin/pictures"
+          method="post"
+        >
+          <label className={styles.tripItems} htmlFor="name">
+            Update Photo Url
+          </label>
+          <select className={styles.tripItems} ref={select} name="name">
+            {trips.map((trip) => {
+              return (
+                <option key={trip.name} value={trip.name}>
+                  {toTitleCase(trip.name.replaceAll("_", " "))}
+                </option>
+              );
+            })}
+          </select>
+          <input
+            className={styles.tripItems}
+            name="photosUrl"
+            type="text"
+            pattern="^https:\/\/photos.app.goo.gl\/\w*$"
+            required
+          />
+          <button className={styles.tripItems} type="submit">
+            Save
+          </button>
+        </form>
+        <table className={styles.tripTable}>
+          <thead className={styles.tripTableHead}>
+            <tr>
+              <th className={styles.tripNameColumn} scope="column">Name</th>
+              <th scope="column">Url</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              trips.map(({ id, name, photosUrl}) => {
+                return (
+                  <tr key={id}>
+                    <th scope="row">{name}</th>
+                    <td className={styles.tripRow}>{photosUrl}</td>
+                  </tr>
+                );
+              })
+            }
+          </tbody>
+        </table>
     </AdminMain>
   );
 };

@@ -1,0 +1,16 @@
+.container {
+    text-align: center;
+}
+
+.link {
+    display: block;
+    margin: 1rem;
+    color: -webkit-link;
+    font-size: larger;
+    font-weight: 700;
+}
+
+.img {
+    margin: 1rem 1rem;
+    height: 180px;
+}

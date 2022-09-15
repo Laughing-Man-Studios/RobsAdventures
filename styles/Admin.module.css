@@ -86,3 +86,19 @@
   color: -webkit-link;
   display: block;
 }
+
+.tripTable {
+  margin: auto;
+}
+
+.tripTableHead {
+  background-color: lightslategray;
+}
+
+.tripNameColumn {
+  width: 4rem;
+}
+
+.tripRow {
+  max-height: 6rem;
+}

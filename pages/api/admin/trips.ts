@@ -12,7 +12,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<string>) {
         data: {
           name,
           zoom: 3,
-        },
+        }
       });
       res.redirect("/admin/trips");
     } catch (e) {

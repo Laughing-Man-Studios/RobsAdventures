@@ -44,11 +44,6 @@ const AdminMain: React.FC<PropsWithChildren<AdminMainProps>> = ({
               <a>Trips</a>
             </Link>
           </li>
-          <li className={styles.mainLinkItem}>
-            <Link href="/admin/pictures">
-              <a>Pictures</a>
-            </Link>
-          </li>
           <li className={styles.mainLogout} onClick={logout}>
             Logout
           </li>
