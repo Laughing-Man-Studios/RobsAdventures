@@ -16,6 +16,7 @@ kill_timeout = 5
   allowed_public_ports = []
   auto_rollback = true
   cmd = []
+  cmd = []
   entrypoint = []
   exec = []
 
