@@ -5,7 +5,10 @@ kill_signal = "SIGINT"
 kill_timeout = 5
 
 [build]
-  builder = "heroku/buildpacks:20"
+  dockerfile = "Dockerfile"
+
+[deploy]
+  release_command = "npx prisma migrate deploy && npx prisma db seed"
 
 [deploy]
   release_command = "npx prisma migrate deploy && npx prisma db seed"
