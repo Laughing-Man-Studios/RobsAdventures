@@ -10,9 +10,6 @@ kill_timeout = 5
 [deploy]
   release_command = "npx prisma migrate deploy && npx prisma db seed"
 
-[deploy]
-  release_command = "npx prisma migrate deploy && npx prisma db seed"
-
 [env]
 
 [experimental]
