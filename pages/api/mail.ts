@@ -82,20 +82,24 @@ export default async function handler(
   // eslint-disable-next-line @typescript-eslint/ban-types
   res: NextApiResponse<string | AuthMessage>
 ) {
-  if (!checkIntervalTime()) {
-    res.status(200)
-      .send('Skipping Get Mail. Its been less than '
-        + '6 hours since last time mail was retrieved');
-    return false;
-  }
-  const oAuth2Client = getOauth2Client(res);
+  // if (!checkIntervalTime()) {
+  //   res.status(200)
+  //     .send('Skipping Get Mail. Its been less than '
+  //       + '6 hours since last time mail was retrieved');
+  //   return false;
+  // }
+  // const oAuth2Client = getOauth2Client(res);
   try {
-    await getToken(oAuth2Client);
-    await getAndSaveMail(oAuth2Client);
+    // await getToken(oAuth2Client);
+    // await getAndSaveMail({oAuth2Client});
+    console.log('Saving photos');
+    await addTripPhotos();
+    console.log('Saved photos');
     res.status(200).send("Success");
   } catch (err) {
     if (err instanceof TokenError) {
-      getAuthUrl(oAuth2Client, err);
+      // getAuthUrl(oAuth2Client, err);
+      console.log(err);
     } else {
       console.log("Not token error");
       console.log(err);

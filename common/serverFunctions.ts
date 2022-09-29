@@ -224,45 +224,53 @@ export async function addTrips(names: string[]): Promise<void> {
   }
 }
 
-export async function addTripPhotos(trip: Trip): Promise<void | false> {
+const defualtTrip = {
+  name: 'test',
+  photosUrl: 'https://photos.app.goo.gl/CteMKWovtWSsc5UF7'
+} as Trip;
+
+export async function addTripPhotos(trip: Trip = defualtTrip): Promise<void | false> {
   if (!trip.photosUrl) {
     return false;
   }
   let urls: string[] = [];
-  let pictureUrls = [];
+  // let pictureUrls = [];
   try {
     urls = await scrapePictures(trip.photosUrl);
     urls = Array.from(new Set(urls));
   } catch (err) {
     throw new FunctionalError(`Failed to scrape pictures for ${trip.name}: ${trip.photosUrl} -> ${err}`);
   }
-  try {
-    pictureUrls = (await getPictures(trip.name)).map(picture => picture.url);
-  } catch (err) {
-    throw new APIError(`Unable to get pictures for picturesUrls -> ${err}`);
-  }
-
-  for (const url of urls) {
-    try {
-      if (!pictureUrls.includes(url)) {
-        console.log('Creating picture entry: ' + url);
-        await prisma.pictures.create({
-          data: {
-            url,
-            trip: {
-              connect: { name: trip.name }
-            }
-          }
-        })
-      }
-    } catch (err) {
-      throw new APIError(`Unable to add picture: ${url}, ${trip} -> ${err}`);
-    }
-  }
+  console.log(urls);
+  // try {
+  //   pictureUrls = (await getPictures(trip.name)).map(picture => picture.url);
+  // } catch (err) {
+  //   throw new APIError(`Unable to get pictures for picturesUrls -> ${err}`);
+  // }
+  //
+  // for (const url of urls) {
+  //   try {
+  //     if (!pictureUrls.includes(url)) {
+  //       console.log('Creating picture entry: ' + url);
+  //       await prisma.pictures.create({
+  //         data: {
+  //           url,
+  //           trip: {
+  //             connect: { name: trip.name }
+  //           }
+  //         }
+  //       })
+  //     }
+  //   } catch (err) {
+  //     throw new APIError(`Unable to add picture: ${url}, ${trip} -> ${err}`);
+  //   }
+  // }
 }
 
 async function scrapePictures(url: string): Promise<string[]> {
-  const browser = await Puppeteer.launch({});
+  const browser = await Puppeteer.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
   const page = await browser.newPage();
 
   await page.goto(url, { waitUntil: 'networkidle0' });
