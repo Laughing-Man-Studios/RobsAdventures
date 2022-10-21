@@ -2,12 +2,11 @@ import { google, gmail_v1 } from "googleapis";
 import { OAuth2Client } from "google-auth-library";
 import { NextApiResponse } from "next";
 import { AuthMessage, ModifiedLocation, ModifiedMessage } from "./types";
-import { PrismaClient, Trip, Authentication, Pictures } from "@prisma/client";
+import { PrismaClient, Trip, Authentication } from "@prisma/client";
 import { GMAIL_TOKEN_FLAG, GMAIL_TOKEN_VAR } from "./literals";
 import { TokenError } from "./errors";
 import { GaxiosError } from "gaxios";
 import { APIError, FunctionalError } from "./errors";
-import Puppeteer from "puppeteer";
 export { toTitleCase, labelToDatabaseName } from "./functions";
 const prisma = new PrismaClient();
 
@@ -28,6 +27,7 @@ export function getOauth2Client(
 
 export async function getToken(oAuth2Client: OAuth2Client) {
   const tokenEntry = await getTokenFromDB();
+  console.log('Stored Token :' + JSON.stringify(tokenEntry));
   if (tokenEntry) {
     const token = JSON.parse(tokenEntry.value.toString());
     if (!token.refresh_token) {
@@ -95,7 +95,7 @@ export function getAuthUrl(oAuth2Client: OAuth2Client, err: unknown): string {
   process.env[GMAIL_TOKEN_FLAG] = authUrl;
   console.log(
     "Either bad or expired token, or there is no token stored. Need to re-authenticate. Err: \n" +
-    err
+      err
   );
   return authUrl;
 }
@@ -110,9 +110,9 @@ export async function getLocations(trip: string): Promise<ModifiedLocation[]> {
       },
     });
     await prisma.$disconnect();
-
+  
     locationData.sort((a, b) => b.dateTime.getTime() - a.dateTime.getTime());
-
+  
     return locationData.map(
       ({ id, gmailId, tripId, longitude, latitude, dateTime }) => {
         return {
@@ -139,11 +139,11 @@ export async function getMessages(trip: string): Promise<ModifiedMessage[]> {
         },
       },
     });
-
+  
     await prisma.$disconnect();
-
+  
     messageData.sort((a, b) => b.dateTime.getTime() - a.dateTime.getTime());
-
+  
     return messageData.map(({ id, gmailId, tripId, message, dateTime }) => {
       return {
         id,
@@ -163,28 +163,12 @@ export async function getTrips(): Promise<Trip[]> {
   try {
     const trips = await prisma.trip.findMany();
     await prisma.$disconnect();
-
+  
     return trips;
   } catch (err) {
     throw new APIError(`Unable to get Trips -> ${err}`);
   }
-}
 
-export async function getPictures(trip: string): Promise<Pictures[]> {
-  try {
-    const pictures = await prisma.pictures.findMany({
-      where: {
-        trip: {
-          name: trip.toUpperCase()
-        }
-      }
-    });
-    await prisma.$disconnect();
-
-    return pictures;
-  } catch (err) {
-    throw new APIError(`Unable to get Pictures -> ${err}`);
-  }
 }
 
 export async function getAuthData(): Promise<Authentication[]> {
@@ -222,78 +206,4 @@ export async function addTrips(names: string[]): Promise<void> {
       throw new APIError(`Unable to add trip: ${name} -> ${err}`);
     }
   }
-}
-
-export async function addTripPhotos(trip: Trip): Promise<void | false> {
-  if (!trip.photosUrl) {
-    return false;
-  }
-  let urls: string[] = [];
-  let pictureUrls = [];
-  try {
-    urls = await scrapePictures(trip.photosUrl);
-    urls = Array.from(new Set(urls));
-  } catch (err) {
-    throw new FunctionalError(`Failed to scrape pictures for ${trip.name}: ${trip.photosUrl} -> ${err}`);
-  }
-  try {
-    pictureUrls = (await getPictures(trip.name)).map(picture => picture.url);
-  } catch (err) {
-    throw new APIError(`Unable to get pictures for picturesUrls -> ${err}`);
-  }
-
-  for (const url of urls) {
-    try {
-      if (!pictureUrls.includes(url)) {
-        console.log('Creating picture entry: ' + url);
-        await prisma.pictures.create({
-          data: {
-            url,
-            trip: {
-              connect: { name: trip.name }
-            }
-          }
-        })
-      }
-    } catch (err) {
-      throw new APIError(`Unable to add picture: ${url}, ${trip} -> ${err}`);
-    }
-  }
-}
-
-async function scrapePictures(url: string): Promise<string[]> {
-  const browser = await Puppeteer.launch({});
-  const page = await browser.newPage();
-
-  await page.goto(url, { waitUntil: 'networkidle0' });
-
-  return await page.evaluate(async () => {
-    let urls: string[] = [];
-    const delay = 1000;
-    const wait = (ms: number) => new Promise<void>(res => setTimeout(res, ms));
-    const lastPic = () => {
-      const pics = document.querySelectorAll('div[data-latest-bg]');
-      return pics[pics.length - 1];
-    };
-    const scrollDown = () => {
-      const divs = document.querySelectorAll('div[data-latest-bg]');
-      divs[divs.length - 1].scrollIntoView();
-    };
-    const scrape = (): string[] => {
-      const divs: HTMLDivElement[] = Array.from(document.querySelectorAll('div[data-latest-bg]'));
-      return divs.map(el => el.getAttribute('data-latest-bg') || '').filter(el => el !== '');
-    }
-
-    let preLastPic = null;
-    let postLastPic = null;
-    do {
-      preLastPic = lastPic();
-      scrollDown();
-      await wait(delay);
-      urls = urls.concat(scrape());
-      postLastPic = lastPic();
-    } while (!postLastPic.isSameNode(preLastPic));
-    await wait(delay);
-    return urls;
-  });
 }

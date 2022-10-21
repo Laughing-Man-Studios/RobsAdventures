@@ -8,14 +8,12 @@ import {
   getToken,
   getLabels,
   getAuthUrl,
-  getTrips,
-  addTripPhotos,
 } from "../../common/serverFunctions";
 import { AuthMessage } from "../../common/types";
 import { OAuth2Client } from "google-auth-library";
 import { gmail_v1, google } from "googleapis";
 import { TokenError } from "../../common/errors";
-import { PrismaClient, Trip } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -24,9 +22,6 @@ interface LocationData {
   latitude: string;
 }
 
-/* ------------------------------- *\
-          HELPER FUNCTIONS
-\* ------------------------------- */
 function getTripLabel(
   tripLabelMap: Map<string, string>,
   labelIds: string[] | undefined
@@ -64,19 +59,6 @@ function checkIntervalTime(): boolean {
   return false;
 }
 
-function getLocationData(snippit: string): LocationData {
-  const [, latitude, longitude] =
-    snippit.match(/(?<=My location is )(.\d*.\d*), (.\d*.\d*)/) || [];
-
-  return {
-    latitude,
-    longitude,
-  };
-}
-
-/* ------------------------------- *\
-          MAIN REQUEST HANDLER
-\* ------------------------------- */
 export default async function handler(
   req: NextApiRequest,
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -104,10 +86,6 @@ export default async function handler(
   }
 }
 
-/* ------------------------------- *\
-        ACTION AND DB FUNCTIONS
-\* ------------------------------- */
-
 async function getAndSaveMail(auth: OAuth2Client) {
   const gmail = google.gmail({ version: "v1", auth });
   console.log("got gmail instance");
@@ -119,8 +97,16 @@ async function getAndSaveMail(auth: OAuth2Client) {
   console.log("saved locations");
   await saveUpdateMessages(labelMap, gmail);
   console.log("saved blog messages");
-  await savePhotos();
-  console.log('Saved photos');
+}
+
+function getLocationData(snippit: string): LocationData {
+  const [, latitude, longitude] =
+    snippit.match(/(?<=My location is )(.\d*.\d*), (.\d*.\d*)/) || [];
+
+  return {
+    latitude,
+    longitude,
+  };
 }
 
 async function updateTrips(labelMap: Map<string, string>): Promise<void> {
@@ -277,19 +263,6 @@ async function saveUpdateMessages(
           await prisma.$disconnect();
         }
       }
-    }
-  }
-}
-
-async function savePhotos(): Promise<void> {
-  let trips: Trip[] | null = null;
-  trips = await getTrips();
-  for (const trip of trips) {
-    try {
-      await addTripPhotos(trip);
-    } catch (e) {
-      console.log()
-      throw e;
     }
   }
 }
