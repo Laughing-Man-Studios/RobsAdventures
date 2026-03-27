@@ -1,56 +1,51 @@
 import React, { PropsWithChildren } from 'react';
+import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import mapStyles from '../../styles/Map.module.css';
 
-interface Map {
-  center: google.maps.LatLngLiteral;
-  zoom: number;
-  onPan?: (newLat: number, newLng: number) => void;
-  onZoom?: (newZoom: number) => void;
+interface MapEventsProps {
+  onPan?: (lat: number, lng: number) => void;
+  onZoom?: (zoom: number) => void;
 }
 
-const Map: React.FC<PropsWithChildren<Map>> = ({
-    center,
-    zoom,
-    onPan,
-    onZoom,
-    children
-  }) => {
-    const ref = React.useRef<HTMLDivElement>(null);
-    const [map, setMap] = React.useState<google.maps.Map>();
-    function onCenterChanged(this: google.maps.Map) {
-      const center = this.getCenter();
-      if (onPan && center) {
-        onPan(center.lat(), center.lng());
+const MapEvents: React.FC<MapEventsProps> = ({ onPan, onZoom }) => {
+  useMapEvents({
+    moveend(e) {
+      if (onPan) {
+        const center = e.target.getCenter();
+        onPan(center.lat, center.lng);
       }
-    }
+    },
+    zoomend(e) {
+      if (onZoom) {
+        onZoom(e.target.getZoom());
+      }
+    },
+  });
+  return null;
+};
 
-    function onZoomChanged(this: google.maps.Map) {
-      const zoom = this.getZoom();
-      if (onZoom && zoom) {
-        onZoom(zoom);
-      }
-    }
-  
-    React.useEffect(() => {
-      if (ref.current && !map) {
-        const newMap = new window.google.maps.Map(ref.current, {
-          zoom,
-          center
-        });
-        newMap.addListener('center_changed', onCenterChanged);
-        newMap.addListener('zoom_changed', onZoomChanged)
-        setMap(newMap);
-      }
-    }, [ref, map, zoom, center]);
-  
-    return (<div ref={ref} id="map" className={mapStyles.container}>
-      {React.Children.map(children, (child) => {
-        if (React.isValidElement(child)) {
-          // set the map prop on the child component
-          return React.cloneElement(child, { map });
-      }
-    })}
-    </div>);
-  };
+interface MapProps {
+  center: { lat: number; lng: number };
+  zoom: number;
+  onPan?: (lat: number, lng: number) => void;
+  onZoom?: (zoom: number) => void;
+}
 
-  export default Map;
+const Map: React.FC<PropsWithChildren<MapProps>> = ({ center, zoom, onPan, onZoom, children }) => {
+  return (
+    <MapContainer
+      center={[center.lat, center.lng]}
+      zoom={zoom}
+      className={mapStyles.container}
+    >
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      <MapEvents onPan={onPan} onZoom={onZoom} />
+      {children}
+    </MapContainer>
+  );
+};
+
+export default Map;

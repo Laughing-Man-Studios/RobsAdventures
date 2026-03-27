@@ -22,17 +22,17 @@
     "release": "bash scripts/release.sh"
   },
   "dependencies": {
-    "@googlemaps/react-wrapper": "^1.1.35",
-    "@googlemaps/typescript-guards": "^2.0.0",
     "@prisma/client": "^4.2.1",
     "googleapis": "^39.2.0",
     "iron-session": "^6.1.0",
-    "next": "12.1.6",
+    "leaflet": "^1.9.4",
+    "next": "^12.3.4",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-leaflet": "^4.2.1"
   },
   "devDependencies": {
-    "@types/google.maps": "^3.49.2",
+    "@types/leaflet": "^1.9.21",
     "@types/node": "18.0.0",
     "@types/react": "18.0.14",
     "@types/react-dom": "18.0.5",
