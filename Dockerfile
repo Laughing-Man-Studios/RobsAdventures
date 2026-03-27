@@ -5,6 +5,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY . .
 RUN npm ci
+RUN npx prisma generate
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
