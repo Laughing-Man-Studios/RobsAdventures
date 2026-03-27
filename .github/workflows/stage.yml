@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - stage
+      - UpdateMap
  
 jobs:
   build:
