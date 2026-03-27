@@ -3,15 +3,14 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from '../styles/Home.module.css';
-import GoogleMap from '../components/map/container';
+import MapContainer from '../components/map/container';
 import TimeTable from '../components/table';
 import Blog from '../components/blog';
 import MobileNav from './nav/mobile';
 import WebNav from './nav/web';
-import { Trip } from '@prisma/client';
 
-const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips, page }) => {
-    const mapCoords = trips.find(trip => trip.name === page.toUpperCase()) || {} as Trip;
+const Main: React.FC<AppProps> = ({ tokenURL, locations, messages, trips, page }) => {
+    const mapCoords = trips.find(trip => trip.name === page.toUpperCase());
 
     return (
         <div className={styles.container}>
@@ -44,7 +43,7 @@ const Main: React.FC<AppProps> = ({ tokenURL, apiKey, locations, messages, trips
                 The table shows the time at which location was triggered by me.
               </p>
               <div className={styles.mapContent}>
-                <GoogleMap apiKey={apiKey} locations={locations} mapCoords={mapCoords} page={page}/>
+                <MapContainer locations={locations} mapCoords={mapCoords} page={page}/>
                 <TimeTable locations={locations} />
               </div>
             </div>
