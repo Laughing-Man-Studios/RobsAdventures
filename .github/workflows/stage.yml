@@ -16,7 +16,7 @@ jobs:
       - name: Install Node
         uses: actions/setup-node@v1
         with: 
-          node-version: '16.17.0'
+          node-version: '22'
       - name: Install Node Dependecies
         run: npm ci
       - name: Run Build
