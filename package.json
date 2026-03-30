@@ -6,8 +6,8 @@
     ".next/cache"
   ],
   "engines": {
-    "node": "16.x",
-    "npm": "8.x"
+    "node": "22.x",
+    "npm": "10.x"
   },
   "prisma": {
     "seed": "npx ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
